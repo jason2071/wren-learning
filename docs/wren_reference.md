@@ -52,17 +52,19 @@ my-wren-project/
 ### `models/customers/metadata.yml`
 
 ```yaml
-name: customers
+name: customers                # alias — ตารางจริงคือ customers_v2
 table_reference:
   schema: public
   table: customers_v2          # ผูกตารางจริง (ไม่ใช่ v1 ที่ตายแล้ว)
 primary_key: customer_id
 columns:
-  - { name: customer_id, type: INTEGER, is_primary_key: true }
-  - { name: first_name, type: VARCHAR }
-  - { name: last_name,  type: VARCHAR }
+  - { name: customer_id, type: INT, not_null: true }
+  - { name: first_name, type: TEXT }
+  - { name: last_name,  type: TEXT }
+  - { name: email, type: TEXT }   # ยัง expose (playbook Trap 3 ให้ลบเพื่อ mask)
+  - { name: phone, type: TEXT }   # ยัง expose
   - { name: created_at, type: TIMESTAMP }
-  # ไม่ประกาศ email / phone / national_id -> agent มองไม่เห็น (masking)
+  # national_id ไม่ประกาศ = agent มองไม่เห็น (masked แล้ว)
 ```
 
 ### `models/orders/metadata.yml`
@@ -86,9 +88,9 @@ columns:
 
 ```yaml
 relationships:
-  - name: orders_to_customers
+  - name: order_customers
     models: [orders, customers]
-    join_type: many_to_one
+    join_type: MANY_TO_ONE
     condition: orders.customer_id = customers.customer_id
 ```
 
@@ -115,7 +117,7 @@ relationships:
 
 ```bash
 python3 -m venv ~/.venvs/wren && source ~/.venvs/wren/bin/activate
-pip install "wrenai[postgres,memory,main]"
+pip install "wrenai[postgres,memory]"
 
 wren profile add demo-pg --interactive     # หรือ --ui / --from-file
 wren context init

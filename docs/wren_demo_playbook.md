@@ -104,7 +104,7 @@ wren dry-plan --sql "SELECT first_name, national_id FROM customers_v2 LIMIT 3"
 
 ## Trap 2 + 4 — Business semantics
 
-**แก้** `instructions.md` (ตอนนี้ว่าง) → ใส่:
+**แก้** `instructions.md` (repo นี้ใส่ไว้ให้แล้ว — ดูว่ามีครบ) → ควรมี:
 ```markdown
 ## Definitions
 - "active customer" = ลูกค้าที่มี order status = 2 (paid) ใน 90 วันล่าสุด
