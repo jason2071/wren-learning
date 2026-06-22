@@ -75,6 +75,27 @@ wren dry-plan --sql "SELECT first_name FROM customers LIMIT 5"
 wren memory recall --query "ลูกค้ามีกี่คน"
 ```
 
+### recall สวยๆ (อ่านง่าย)
+
+table default รก — ใช้ `-o json | jq` เหลือ dist + nl + sql:
+
+```bash
+wren memory recall -q "ลูกค้ามีกี่คน" -l 3 -o json \
+  | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
+```
+
+ทำเป็น function ใน `~/.zshrc` แล้วเรียก `wmr "คำถาม"`:
+
+```bash
+wmr() {
+  wren memory recall -q "$1" -l "${2:-3}" -o json \
+    | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
+}
+# wmr "สมัครวันนี้กี่คน"   ·   wmr "revenue" 5   (เอา 5 ผล)
+```
+
+> dist ต่ำ = ใกล้ (0 = ตรงเป๊ะ). รายละเอียดเพิ่มใน [playbook](docs/wren_demo_playbook.md)
+
 ---
 
 ## หลังแก้ config ทุกครั้ง

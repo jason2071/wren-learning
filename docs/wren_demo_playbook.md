@@ -196,12 +196,82 @@ wren --sql "SELECT SUM(total) FROM orders WHERE status = 2" -o table
 
 ---
 
+## Demo: คำถามใหม่ที่ memory ยังไม่รู้ — loop `recall → write → store`
+
+เคสจริง: "มีคนสมัครสมาชิกวันนี้กี่คน + ใครล่าสุด" — สอนวงจรที่ทำให้ Wren ฉลาดขึ้นเอง
+(`สมัครสมาชิก` = `customers.created_at` ตามนิยามใน `instructions.md`)
+
+**1. recall ก่อน — เผื่อเคยถาม**
+```bash
+wren memory recall --query "สมัครวันนี้กี่คน"
+# ผลแรก dist ~0.7 "ลูกค้ามีกี่คน" = ใกล้สุดแต่ยังไม่ตรง (นับทั้งหมด ไม่ใช่วันนี้)
+# dist สูง = memory ยังไม่มีของตรง → เขียนเอง
+```
+
+**2. เขียน SQL + รันจริง**
+```bash
+wren --sql "SELECT COUNT(*) FROM customers WHERE created_at::date = current_date" -o table
+wren --sql "SELECT first_name, last_name, created_at FROM customers ORDER BY created_at DESC LIMIT 1" -o table
+```
+
+**3. store เก็บไว้ — ครั้งหน้า recall เจอ dist ต่ำ**
+```bash
+wren memory store \
+  --nl "มีคนสมัครสมาชิกวันนี้กี่คน" \
+  --sql "SELECT COUNT(*) FROM customers WHERE created_at::date = current_date"
+```
+
+**4. recall ซ้ำ — พิสูจน์ว่าจำได้**
+```bash
+wren memory recall --query "สมัครวันนี้กี่คน"   # คราวนี้คู่ที่ store ขึ้นบนสุด dist ต่ำ
+wren memory list                                 # browse คู่ทั้งหมดที่จำไว้
+```
+
+> 2 คู่นี้อยู่ใน `queries.yml` แล้ว → `wren memory index` ก็ load เข้าให้เลย (ไม่ต้อง store มือ)
+> จุดสำคัญ: recall **หยิบของเก่าที่คล้าย** ไม่ได้เขียนใหม่ — คล้าย ≠ ถูก ต้องดู dist + ตรวจ SQL
+
+---
+
+## recall สวยๆ (อ่านง่าย)
+
+table default รกไป (มี column `text`/`datasource`/`tags`/`created_at` เกิน) — ใช้ `-o json | jq` กรองเหลือ dist + nl + sql
+
+**one-liner** (keys จริง: `_distance` / `nl_query` / `sql_query`):
+```bash
+wren memory recall -q "ลูกค้ามีกี่คน" -l 3 -o json \
+  | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
+```
+ผล:
+```text
+dist 0      ลูกค้ามีกี่คน
+    SELECT COUNT(*) AS customer_count FROM customers
+dist 0.573  List all customers
+    SELECT * FROM customers LIMIT 100
+dist 0.718  Total customer_id in orders
+    SELECT SUM(customer_id) FROM orders
+```
+> dist ต่ำ = ใกล้ (0 = ตรงเป๊ะ). `-l` = จำนวนผล (default 3)
+
+**ทำเป็น function** — ใส่ใน `~/.zshrc` แล้วเรียก `wmr "คำถาม"`:
+```bash
+wmr() {
+  wren memory recall -q "$1" -l "${2:-3}" -o json \
+    | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
+}
+# ใช้: wmr "สมัครวันนี้กี่คน"      ·  wmr "revenue" 5   (เอา 5 ผล)
+```
+
+---
+
 ## เกร็ด
 
 - `wren_project.yml` ชี้ `profile: example`, active = `my-wren-project` — ทั้งคู่ postgres 5433/example เหมือนกัน ใช้ได้ อยากตรงก็ `wren context set-profile my-wren-project`
 - แก้ yml/md ทุกครั้ง → `wren context build` (+ `wren memory index` ถ้าแตะ `instructions.md` / `queries.yml`)
 - เทียบ before/after ใช้ `wren dry-plan` (ดู SQL expand) ดีสุด — ไม่แตะ DB
 - รัน SQL จริง: `wren --sql "..." -o table` · validate ไม่คืน row: `wren dry-run --sql "..."`
+- `memory` subcommands จริง: `index · fetch · store · recall · list · forget · load · reset · status` (`dump` พังเพราะขาด `lance`)
+- `wren memory index` default โหลด `queries.yml` + `instructions.md` อัตโนมัติ (ปิดด้วย `--no-queries` / `--no-instructions`)
+- สถานะ masking ปัจจุบัน: model เปิด `email`/`phone` อยู่ — Trap 3 ข้างบนคือ exercise ให้ลบเอง (`national_id` ลบแล้ว)
 
 ## ลำดับเล่นแนะนำ
 
