@@ -15,6 +15,7 @@
 | [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — เปิดในเบราว์เซอร์ (before/after toggle, distance bars, copy buttons) | อยากดูแบบเล่นได้ |
 | [`docs/wren_concept_guide.md`](docs/wren_concept_guide.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
 | [`docs/wren_demo_playbook.md`](docs/wren_demo_playbook.md) | เล่น 4 กับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
+| [`docs/wren_new_question_recipe.md`](docs/wren_new_question_recipe.md) | recipe คำถามใหม่ — เพิ่มไฟล์ไหน รันอะไร ทางลัด | เจอคำถามใหม่ |
 | [`docs/wren_reference.md`](docs/wren_reference.md) | โครงไฟล์ + ตาราง CLI | ตอนลงมือ lookup |
 
 ---
