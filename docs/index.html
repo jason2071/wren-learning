@@ -496,9 +496,10 @@ footer a:hover{text-decoration:underline}
 const prog=document.getElementById('prog'),secs=[...document.querySelectorAll('section')],links=[...document.querySelectorAll('nav a')];
 addEventListener('scroll',()=>{
   const h=document.documentElement,sc=h.scrollTop,mx=h.scrollHeight-h.clientHeight;
-  prog.style.width=(sc/mx*100)+'%';
+  prog.style.width=(mx>0?sc/mx*100:0)+'%';
   let cur=secs[0].id;
   for(const s of secs){if(sc>=s.offsetTop-110)cur=s.id;}
+  if(sc>=mx-2)cur=secs[secs.length-1].id;   // ถึงล่างสุด → active section สุดท้าย (กันค้างที่ตัวก่อนหน้า)
   links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 
