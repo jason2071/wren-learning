@@ -1,0 +1,22 @@
+name: customers
+properties:
+  description: "Current (v2) customer records: split first/last name, phone, national_id. Referenced by orders."
+table_reference:
+  catalog: ""
+  schema: public
+  table: customers_v2
+primary_key: customer_id
+columns:
+  - name: customer_id
+    type: INT
+    not_null: true
+  - name: first_name
+    type: TEXT
+  - name: last_name
+    type: TEXT
+  - name: email
+    type: TEXT
+  - name: phone
+    type: TEXT
+  - name: created_at
+    type: TIMESTAMP

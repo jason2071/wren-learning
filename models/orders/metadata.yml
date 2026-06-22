@@ -1,0 +1,25 @@
+name: orders
+properties:
+  description: "Customer orders. customer_id references customers_v2. total is order amount; status is an integer code; paid_at null until paid."
+table_reference:
+  catalog: ""
+  schema: public
+  table: orders
+primary_key: order_id
+columns:
+  - name: order_id
+    type: INT
+    not_null: true
+  - name: customer_id
+    type: INT
+  - name: status
+    type: INT
+    not_null: true
+  - name: total
+    type: DECIMAL
+    not_null: true
+  - name: created_at
+    type: TIMESTAMP
+    not_null: true
+  - name: paid_at
+    type: TIMESTAMP

@@ -1,0 +1,22 @@
+# --- secrets / credentials (อย่า commit เด็ดขาด) ---
+.env
+.env.*
+!.env.example
+
+# --- generated โดย wren ---
+# target/ = compiled mdl.json (มาจาก `wren context build`)
+# .wren/  = local memory index LanceDB (มาจาก `wren memory index`)
+target/
+.wren/
+
+# --- Python venv ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/

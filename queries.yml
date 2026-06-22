@@ -1,0 +1,14 @@
+version: 1
+pairs:
+  - nl: "ลูกค้ามีกี่คน"
+    sql: "SELECT COUNT(*) FROM customers"
+  - nl: "revenue รวมเท่าไร"
+    sql: "SELECT SUM(total) FROM orders WHERE status = 2"
+  - nl: "ลูกค้า active 90 วันมีกี่คน"
+    sql: "SELECT COUNT(DISTINCT customer_id) FROM orders WHERE status = 2 AND paid_at >= now() - interval '90 days'"
+  - nl: "ยอดขายรายเดือน"
+    sql: "SELECT date_trunc('month', paid_at) AS month, SUM(total) AS revenue FROM orders WHERE status = 2 GROUP BY 1 ORDER BY 1"
+  - nl: "มีคนสมัครสมาชิกวันนี้กี่คน"
+    sql: "SELECT COUNT(*) FROM customers WHERE created_at::date = current_date"
+  - nl: "ใครสมัครล่าสุด"
+    sql: "SELECT customer_id, first_name, last_name, created_at FROM customers ORDER BY created_at DESC LIMIT 1"
