@@ -6,13 +6,15 @@
 มาพร้อม demo seed ที่จงใจฝัง **4 กับดัก** (ตารางตาย v1/v2, status เลขเปล่า, คอลัมน์ลับ, created_at vs paid_at)
 เพื่อเทียบ raw SQL (ตกหลุม) กับ Wren (รอด)
 
+📖 **คู่มือ interactive (เปิดได้เลย):** https://jason2071.github.io/wren-learning/
+
 ---
 
 ## เอกสาร (อ่านตามลำดับนี้)
 
 | ไฟล์ | เนื้อหา | อ่านเมื่อ |
 |---|---|---|
-| [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — เปิดในเบราว์เซอร์ (before/after toggle, distance bars, copy buttons) | อยากดูแบบเล่นได้ |
+| [🌐 live](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — before/after toggle, distance bars, copy buttons | อยากดูแบบเล่นได้ |
 | [`docs/wren_concept_guide.md`](docs/wren_concept_guide.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
 | [`docs/wren_demo_playbook.md`](docs/wren_demo_playbook.md) | เล่น 4 กับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
 | [`docs/wren_new_question_recipe.md`](docs/wren_new_question_recipe.md) | recipe คำถามใหม่ — เพิ่มไฟล์ไหน รันอะไร ทางลัด | เจอคำถามใหม่ |
