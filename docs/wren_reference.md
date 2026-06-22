@@ -243,3 +243,5 @@ memory index       ->  ได้ .wren/memory/
 > หมายเหตุ: WrenAI รีโครงสร้างใหญ่ (พ.ค. 2026) — แอป GenBI เก่าถูก sunset
 > (อยู่ branch `legacy/v1`) เวอร์ชันปัจจุบันเน้น context layer ผ่าน CLI + skills
 > คำสั่ง/field อ้างอิงจาก `wren docs connection-info <ds>` เป็นหลัก เพราะตรงกับเวอร์ชันที่ติดตั้ง
+>
+> repo ทางการ: https://github.com/Canner/WrenAI

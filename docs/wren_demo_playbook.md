@@ -156,19 +156,16 @@ source ~/.venvs/wren/bin/activate
 export $(grep -v '^#' .env | xargs)
 ```
 
-**2. ใส่ curated NL-SQL pairs ลง `queries.yml`** (ช่วย recall ให้แม่น)
+**2. curated NL-SQL pairs อยู่ใน `queries.yml` แล้ว** (ช่วย recall ให้แม่น)
+
+repo นี้ ship มาให้ — เปิดดูได้: `cat queries.yml` (มี ลูกค้ามีกี่คน / revenue / active 90 วัน / ยอดขายรายเดือน / สมัครวันนี้ / ใครล่าสุด)
+
+อยากเพิ่มคู่ใหม่ → **append** ต่อท้าย list เดิม (อย่าใช้ `cat >` มันทับทั้งไฟล์):
 ```bash
-cat > queries.yml <<'EOF'
-version: 1
-pairs:
-  - nl: "ลูกค้ามีกี่คน"
-    sql: "SELECT COUNT(*) FROM customers"
-  - nl: "revenue รวมเท่าไร"
-    sql: "SELECT SUM(total) FROM orders WHERE status = 2"
-  - nl: "ลูกค้า active 90 วันมีกี่คน"
-    sql: "SELECT COUNT(DISTINCT customer_id) FROM orders WHERE status = 2 AND paid_at >= now() - interval '90 days'"
-  - nl: "ยอดขายรายเดือน"
-    sql: "SELECT date_trunc('month', paid_at) AS month, SUM(total) AS revenue FROM orders WHERE status = 2 GROUP BY 1 ORDER BY 1"
+# ⚠️ ใช้ >> (append) ไม่ใช่ > (overwrite). indent 2 space ใต้ pairs: เดิม
+cat >> queries.yml <<'EOF'
+  - nl: "สินค้าขายดี top 5"
+    sql: "SELECT customer_id, SUM(total) AS spent FROM orders WHERE status = 2 GROUP BY 1 ORDER BY 2 DESC LIMIT 5"
 EOF
 ```
 

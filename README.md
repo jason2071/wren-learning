@@ -92,3 +92,4 @@ wren context build && wren memory index  # ถ้าแตะ instructions.md / 
 - clone มาแล้วต้องทำ step 2–4 เองเพื่อ regenerate
 - WrenAI รีโครงสร้างใหญ่ (พ.ค. 2026) — เวอร์ชันปัจจุบันเน้น context layer ผ่าน CLI + skills
   คำสั่ง/field อ้างอิงจาก `wren docs connection-info <ds>` เป็นหลัก
+- อ้างอิงทางการ: [Canner/WrenAI](https://github.com/Canner/WrenAI) (GenBI Classic เก่าอยู่ branch `legacy/v1`)
