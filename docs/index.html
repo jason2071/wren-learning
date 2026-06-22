@@ -504,8 +504,18 @@ addEventListener('scroll',()=>{
 
 // mobile nav toggle
 const navEl=document.querySelector('nav'),navBtn=document.getElementById('navtoggle');
+const closeNav=()=>{navEl.classList.remove('open');navBtn.textContent='☰';navBtn.setAttribute('aria-expanded','false');};
 navBtn.onclick=()=>{const o=navEl.classList.toggle('open');navBtn.textContent=o?'✕':'☰';navBtn.setAttribute('aria-expanded',o);};
-navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navEl.classList.remove('open');navBtn.textContent='☰';navBtn.setAttribute('aria-expanded','false');}));
+// explicit smooth-scroll on nav click (native hash scroll undershoots with sticky layout + late font reflow)
+navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{
+  const id=a.getAttribute('href').slice(1),el=document.getElementById(id);
+  if(!el)return;
+  e.preventDefault();
+  closeNav();
+  const y=el.getBoundingClientRect().top+window.scrollY-18;
+  window.scrollTo({top:y,behavior:'smooth'});
+  history.replaceState(null,'','#'+id);
+}));
 
 // trap flip
 document.querySelectorAll('.trap').forEach(t=>{t.setAttribute('aria-pressed','false');t.onclick=()=>{const f=t.classList.toggle('flip');t.setAttribute('aria-pressed',f);};});
