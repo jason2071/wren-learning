@@ -55,7 +55,16 @@ body::after{
 /* nav */
 nav{position:sticky;top:0;align-self:start;height:100vh;padding:46px 0 30px;
   display:flex;flex-direction:column;gap:3px;overflow-y:auto}
-@media(max-width:900px){nav{display:none}}
+#navtoggle{display:none}
+@media(max-width:900px){
+  #navtoggle{display:flex;position:fixed;top:13px;right:14px;z-index:101;width:44px;height:44px;
+    align-items:center;justify-content:center;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--amber);font-size:20px;cursor:pointer}
+  nav{display:flex;position:fixed;inset:0;height:100vh;width:100%;z-index:100;
+    background:#0b0d12f2;backdrop-filter:blur(8px);padding:66px 26px 30px;
+    transform:translateY(-100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);opacity:0}
+  nav.open{transform:none;opacity:1}
+}
 .brand{font-family:var(--serif);font-weight:900;font-size:23px;letter-spacing:-.5px;
   margin-bottom:6px;line-height:1.1}
 .brand i{font-style:italic;color:var(--amber);font-weight:500}
@@ -265,6 +274,7 @@ footer a:hover{text-decoration:underline}
 </head>
 <body>
 <div id="prog"></div>
+<button id="navtoggle" aria-label="เมนู" aria-expanded="false">☰</button>
 
 <div class="wrap">
 <nav>
@@ -313,7 +323,7 @@ footer a:hover{text-decoration:underline}
       </div></button>
       <button class="trap"><div class="trap-in">
         <div class="trap-f"><div class="num">🔒</div><h4>คอลัมน์ลับ</h4><p>national_id ปนข้อมูลทั่วไป — SELECT เห็นหมด รั่ว</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>masking</h4><p>ไม่ประกาศ column ใน model = agent มองไม่เห็น</p></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>masking</h4><p>ไม่ประกาศ column = มองไม่เห็น. ใน demo: national_id ลบแล้ว · email/phone เป็น exercise ให้ลบเอง</p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
         <div class="trap-f"><div class="num">⏱</div><h4>เวลาหลายตัว</h4><p>created_at vs paid_at — กรองผิดตัว เลขเพี้ยน</p><div class="hint">คลิกพลิก ↻</div></div>
@@ -387,6 +397,7 @@ footer a:hover{text-decoration:underline}
     <div class="kicker">08 — เกร็ด</div>
     <h2>recall สวยๆ อ่านง่าย</h2>
     <p>table default รก (มี column <code>text</code>/<code>tags</code>/<code>created_at</code> เกิน) — กรองด้วย <code>-o json | jq</code> เหลือ dist + nl + sql</p>
+    <div class="note">หมายเหตุ: query <code>"ลูกค้ามีกี่คน"</code> ด้านล่างตรงกับคู่ที่ store ไว้เป๊ะ → ได้ <b>dist 0</b>. ส่วน <b>dist 0.735</b> ใน <a href="#distance" style="color:var(--amber)">section 06</a> คือ query <code>"สมัครวันนี้กี่คน"</code> ที่ยังไม่มีของตรง — คนละคำถามกัน</div>
     <div class="code">
       <div class="code-h"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ct">one-liner</span><span class="cp">คัดลอก</span></div>
 <pre><code><span class="tok-f">wren</span> memory recall <span class="tok-o">-q</span> <span class="tok-s">"ลูกค้ามีกี่คน"</span> <span class="tok-o">-l</span> 3 <span class="tok-o">-o</span> json \
@@ -475,7 +486,7 @@ footer a:hover{text-decoration:underline}
 
   <footer>
     <span>WrenAI semantic layer · demo project</span>
-    <span>repo ทางการ: <a href="https://github.com/Canner/WrenAI" target="_blank">Canner/WrenAI</a></span>
+    <span>repo ทางการ: <a href="https://github.com/Canner/WrenAI" target="_blank" rel="noopener noreferrer">Canner/WrenAI</a></span>
   </footer>
 </main>
 </div>
@@ -491,8 +502,13 @@ addEventListener('scroll',()=>{
   links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 
+// mobile nav toggle
+const navEl=document.querySelector('nav'),navBtn=document.getElementById('navtoggle');
+navBtn.onclick=()=>{const o=navEl.classList.toggle('open');navBtn.textContent=o?'✕':'☰';navBtn.setAttribute('aria-expanded',o);};
+navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navEl.classList.remove('open');navBtn.textContent='☰';navBtn.setAttribute('aria-expanded','false');}));
+
 // trap flip
-document.querySelectorAll('.trap').forEach(t=>t.onclick=()=>t.classList.toggle('flip'));
+document.querySelectorAll('.trap').forEach(t=>{t.setAttribute('aria-pressed','false');t.onclick=()=>{const f=t.classList.toggle('flip');t.setAttribute('aria-pressed',f);};});
 
 // reveal on scroll
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}}),{threshold:.12});
@@ -501,7 +517,9 @@ document.querySelectorAll('section:not(.hero) > *').forEach((el,i)=>{el.classLis
 // copy buttons
 document.querySelectorAll('.cp').forEach(b=>b.onclick=()=>{
   const t=b.closest('.code').querySelector('pre').innerText;
-  navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='คัดลอกแล้ว ✓';b.style.color='var(--green)';setTimeout(()=>{b.textContent=o;b.style.color='';},1400);});
+  const ok=()=>{const o=b.textContent;b.textContent='คัดลอกแล้ว ✓';b.style.color='var(--green)';setTimeout(()=>{b.textContent=o;b.style.color='';},1400);};
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){b.textContent='คัดลอกไม่ได้';}document.body.removeChild(ta);};
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok).catch(fb);else fb();
 });
 
 // distance bars animate when visible
