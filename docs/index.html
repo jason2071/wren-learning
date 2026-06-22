@@ -278,7 +278,8 @@ footer a:hover{text-decoration:underline}
   <a href="#loop"><span class="nn">07</span> วงจรฉลาดขึ้น</a>
   <a href="#pretty"><span class="nn">08</span> recall สวยๆ</a>
   <a href="#flow"><span class="nn">09</span> Workflow</a>
-  <a href="#cli"><span class="nn">10</span> CLI cheat-sheet</a>
+  <a href="#recipe"><span class="nn">10</span> คำถามใหม่</a>
+  <a href="#cli"><span class="nn">11</span> CLI cheat-sheet</a>
 </nav>
 
 <main>
@@ -415,9 +416,45 @@ footer a:hover{text-decoration:underline}
     </div>
   </section>
 
+  <!-- RECIPE -->
+  <section id="recipe">
+    <div class="kicker">10 — ลงมือ</div>
+    <h2>เจอคำถามใหม่ ทำยังไง</h2>
+    <p>หลักตัดสิน 1 ประโยค: <strong>คำถามต้องใช้ field / join / นิยาม ที่ layer ยังไม่มีไหม?</strong> — มีครบ <em>ข้าม</em> เขียน SQL ได้เลย · ขาด <em>เพิ่ม</em> ที่ชั้นที่ขาดก่อน. <strong>คลิกการ์ดดูว่าต้องทำอะไร</strong></p>
+
+    <div class="grid g4" style="margin-top:22px">
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--green)">ข้าม</div><h4>field + join ครบ</h4><p>เช่น ลูกค้าซื้อเยอะสุด · order ยังไม่จ่าย · สมัครวันนี้</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">ทำแค่</div><h4>เขียน SQL เลย</h4><p><code>wren --sql "..."</code> · อยากเก็บ → append <code>queries.yml</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--amber)">+col</div><h4>ขาด column</h4><p>DB มี field แต่ model ไม่ประกาศ (เช่น national_id ที่ mask)</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--amber)"><div class="lbl" style="color:var(--amber)">เพิ่มที่</div><h4>models/*/metadata.yml</h4><p>เพิ่ม column → <code>wren context build</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--cyan)">+join</div><h4>ขาด relationship</h4><p>ตารางใหม่ที่ยังไม่ผูก (เช่น order_items)</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--cyan)"><div class="lbl" style="color:var(--cyan)">เพิ่มที่</div><h4>relationships.yml</h4><p>เพิ่ม block join → <code>wren context build</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--violet)">+นิยาม</div><h4>ศัพท์ใหม่</h4><p>"VIP" / "churn" — field ครบ แต่ AI เดาความหมายไม่ได้</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--violet)"><div class="lbl" style="color:var(--violet)">เพิ่มที่</div><h4>instructions.md</h4><p>นิยามศัพท์ → <code>build</code> + <code>memory index</code></p></div>
+      </div></button>
+    </div>
+
+    <h3>ทางลัด — ไม่ต้องรันทุกคำสั่ง</h3>
+    <p>เลือกตามความมั่นใจ. <em>recall / dry-plan</em> = เครื่องมือ debug ใช้ตอนไม่ชัวร์เท่านั้น ปกติข้าม</p>
+    <div class="loop" style="margin-bottom:18px">
+      <div class="lstep"><div class="ls-n">ระดับ 1 · เร็วสุด</div><div class="ls-c" style="color:var(--green)">1 คำสั่ง</div><p>แค่อยากได้คำตอบ · field มั่นใจครบ<br><code>wren --sql "..."</code></p></div>
+      <div class="lstep"><div class="ls-n">ระดับ 2 · เก็บไว้</div><div class="ls-c" style="color:var(--amber)">+ store</div><p>อยากใช้ซ้ำ<br><code>wren memory store --nl --sql</code></p></div>
+      <div class="lstep"><div class="ls-n">ระดับ 3 · ครบ</div><div class="ls-c" style="color:var(--cyan)">git track</div><p>append <code>queries.yml</code><br>→ <code>build &amp;&amp; index</code></p></div>
+    </div>
+    <div class="note warn"><b>ลำดับบังคับ:</b> <code>context build</code> ต้องก่อน <code>memory index</code> เสมอ (index อ่าน mdl.json) · เพิ่ม column/relationship → build ก่อนรัน SQL ที่ใช้ field ใหม่ · <code>store</code> เข้า memory ตรง ไม่ต้อง build</div>
+    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml/build/index</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_new_question_recipe.md</code></div>
+  </section>
+
   <!-- CLI -->
   <section id="cli">
-    <div class="kicker">10 — อ้างอิง</div>
+    <div class="kicker">11 — อ้างอิง</div>
     <h2>CLI cheat-sheet</h2>
     <table class="tbl">
       <thead><tr><th>งาน</th><th>คำสั่ง</th></tr></thead>
