@@ -286,10 +286,9 @@ footer a:hover{text-decoration:underline}
   <a href="#memory"><span class="nn">05</span> Memory</a>
   <a href="#distance"><span class="nn">06</span> อ่าน distance</a>
   <a href="#loop"><span class="nn">07</span> วงจรฉลาดขึ้น</a>
-  <a href="#pretty"><span class="nn">08</span> recall สวยๆ</a>
-  <a href="#flow"><span class="nn">09</span> Workflow</a>
-  <a href="#recipe"><span class="nn">10</span> คำถามใหม่</a>
-  <a href="#cli"><span class="nn">11</span> CLI cheat-sheet</a>
+  <a href="#flow"><span class="nn">08</span> Workflow</a>
+  <a href="#recipe"><span class="nn">09</span> คำถามใหม่</a>
+  <a href="#cli"><span class="nn">10</span> CLI cheat-sheet</a>
 </nav>
 
 <main>
@@ -392,30 +391,9 @@ footer a:hover{text-decoration:underline}
     </div>
   </section>
 
-  <!-- PRETTY -->
-  <section id="pretty">
-    <div class="kicker">08 — เกร็ด</div>
-    <h2>recall สวยๆ อ่านง่าย</h2>
-    <p>table default รก (มี column <code>text</code>/<code>tags</code>/<code>created_at</code> เกิน) — กรองด้วย <code>-o json | jq</code> เหลือ dist + nl + sql</p>
-    <div class="note">หมายเหตุ: query <code>"ลูกค้ามีกี่คน"</code> ด้านล่างตรงกับคู่ที่ store ไว้เป๊ะ → ได้ <b>dist 0</b>. ส่วน <b>dist 0.735</b> ใน <a href="#distance" style="color:var(--amber)">section 06</a> คือ query <code>"สมัครวันนี้กี่คน"</code> ที่ยังไม่มีของตรง — คนละคำถามกัน</div>
-    <div class="code">
-      <div class="code-h"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ct">one-liner</span><span class="cp">คัดลอก</span></div>
-<pre><code><span class="tok-f">wren</span> memory recall <span class="tok-o">-q</span> <span class="tok-s">"ลูกค้ามีกี่คน"</span> <span class="tok-o">-l</span> 3 <span class="tok-o">-o</span> json \
-  | <span class="tok-f">jq</span> <span class="tok-o">-r</span> <span class="tok-s">'.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'</span></code></pre>
-    </div>
-    <div class="code">
-      <div class="code-h"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ct">~/.zshrc — function wmr</span><span class="cp">คัดลอก</span></div>
-<pre><code><span class="tok-f">wmr</span>() {
-  <span class="tok-f">wren</span> memory recall <span class="tok-o">-q</span> <span class="tok-s">"$1"</span> <span class="tok-o">-l</span> <span class="tok-s">"${2:-3}"</span> <span class="tok-o">-o</span> json \
-    | <span class="tok-f">jq</span> <span class="tok-o">-r</span> <span class="tok-s">'.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'</span>
-}
-<span class="tok-c"># wmr "สมัครวันนี้กี่คน"   ·   wmr "revenue" 5</span></code></pre>
-    </div>
-  </section>
-
   <!-- WORKFLOW -->
   <section id="flow">
-    <div class="kicker">09 — ตั้งต้น</div>
+    <div class="kicker">08 — ตั้งต้น</div>
     <h2>จาก folder เปล่า → ถามได้</h2>
     <div class="steps">
       <div class="step"><div class="si"></div><div class="sc"><b>ติดตั้ง + ต่อ DB</b> <code>wren profile add</code><p>ใส่ credential (host/port/user/pass)</p></div></div>
@@ -429,7 +407,7 @@ footer a:hover{text-decoration:underline}
 
   <!-- RECIPE -->
   <section id="recipe">
-    <div class="kicker">10 — ลงมือ</div>
+    <div class="kicker">09 — ลงมือ</div>
     <h2>เจอคำถามใหม่ ทำยังไง</h2>
     <p>หลักตัดสิน 1 ประโยค: <strong>คำถามต้องใช้ field / join / นิยาม ที่ layer ยังไม่มีไหม?</strong> — มีครบ <em>ข้าม</em> เขียน SQL ได้เลย · ขาด <em>เพิ่ม</em> ที่ชั้นที่ขาดก่อน. <strong>คลิกการ์ดดูว่าต้องทำอะไร</strong></p>
 
@@ -465,7 +443,7 @@ footer a:hover{text-decoration:underline}
 
   <!-- CLI -->
   <section id="cli">
-    <div class="kicker">11 — อ้างอิง</div>
+    <div class="kicker">10 — อ้างอิง</div>
     <h2>CLI cheat-sheet</h2>
     <table class="tbl">
       <thead><tr><th>งาน</th><th>คำสั่ง</th></tr></thead>
