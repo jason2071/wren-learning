@@ -296,7 +296,7 @@ footer a:hover{text-decoration:underline}
   <section class="hero" id="what">
     <div class="kicker reveal d1">Semantic SQL Layer · PostgreSQL</div>
     <h1 class="reveal d2">ชั้นกลางที่<br><span class="hl">แปลคำถาม</span> เป็น SQL ที่ถูก</h1>
-    <p class="lead reveal d3">Wren อยู่ระหว่าง <strong>คน/AI</strong> กับ <strong>ฐานข้อมูลจริง</strong> — ถามด้วยภาษาคนหรือชื่อง่ายๆ แล้ว Wren เติมบริบท (ตารางจริง, join, กติกาธุรกิจ) ก่อนยิงลง DB. ไม่ใช่ DB ใหม่ ไม่เก็บข้อมูลซ้ำ — เป็น "ชั้นความรู้" ครอบของเดิม</p>
+    <p class="lead reveal d3">Wren อยู่ระหว่าง <strong>คน/AI</strong> กับ <strong>ฐานข้อมูลจริง</strong> — ถามด้วยภาษาคนหรือชื่อง่ายๆ แล้ว Wren เติมบริบท (ตารางจริง, join, กติกาธุรกิจ) ก่อนส่งลง DB. ไม่ใช่ DB ใหม่ ไม่เก็บข้อมูลซ้ำ — เป็น "ชั้นความรู้" ครอบของเดิม</p>
     <div class="flow reveal d4">
       <div class="node"><b>คน / AI</b><span>ถามภาษาคน</span></div>
       <div class="arrow">→</div>
@@ -355,14 +355,14 @@ footer a:hover{text-decoration:underline}
   <!-- MEMORY -->
   <section id="memory">
     <div class="kicker">05 — Memory</div>
-    <h2>สมุดโน้ตอัจฉริยะ</h2>
+    <h2>Memory — สมุดโน้ตอัจฉริยะ</h2>
     <p>หัวใจที่ทำให้ Wren <em>ยิ่งใช้ยิ่งฉลาด</em> — มี 3 คำสั่งหลัก</p>
     <div class="grid" style="gap:13px;margin-top:22px">
-      <div class="mcmd"><span class="mc">fetch</span><div><h4>เปิดสมุดดูบริบทรอบๆ</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
-      <div class="mcmd"><span class="mc">recall</span><div><h4>เคยมีคนถามแบบนี้ไหม</h4><p>หาคู่ NL↔SQL เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
-      <div class="mcmd"><span class="mc">store</span><div><h4>จดคำตอบที่ถูกไว้</h4><p>บันทึกคู่ NL↔SQL ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
+      <div class="mcmd"><span class="mc">fetch</span><div><h4>เปิดสมุดดูบริบทที่เกี่ยวข้อง</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
+      <div class="mcmd"><span class="mc">recall</span><div><h4>เคยมีคนถามแบบนี้ไหม</h4><p>หาคู่ "คำถาม↔SQL" เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
+      <div class="mcmd"><span class="mc">store</span><div><h4>จดคำตอบที่ถูกไว้</h4><p>บันทึกคู่ "คำถาม↔SQL" ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
     </div>
-    <div class="note">subcommands จริง (verify กับ CLI): <code>index · fetch · store · recall · list · forget · load · reset · status</code>. <code>wren memory index</code> default โหลด <code>queries.yml</code> + <code>instructions.md</code> เข้า memory อัตโนมัติ</div>
+    <div class="note">subcommands ทั้งหมด (ตรวจกับ CLI แล้ว): <code>index · fetch · store · recall · list · forget · load · reset · status</code>. <code>wren memory index</code> default โหลด <code>queries.yml</code> + <code>instructions.md</code> เข้า memory อัตโนมัติ</div>
   </section>
 
   <!-- DISTANCE -->
@@ -375,7 +375,7 @@ footer a:hover{text-decoration:underline}
       <div class="drow near"><div class="dv">0.735</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">ลูกค้ามีกี่คน</div><div class="sq">SELECT COUNT(*) FROM customers</div></div></div></div>
       <div class="drow mid"><div class="dv">1.367</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">List all customers</div><div class="sq">SELECT * FROM customers LIMIT 100</div></div></div></div>
       <div class="drow far"><div class="dv">1.398</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">Total customer_id in orders</div><div class="sq">SELECT SUM(customer_id) FROM orders</div></div></div></div>
-      <div class="verdict">⚠️ ใกล้สุด 0.735 = <b>"ลูกค้ามีกี่คน"</b> แต่นั่นคือนับ<b>ทั้งหมด</b> ไม่ใช่<b>วันนี้</b> — dist 0.7+ ถือว่ายังห่าง (ตรงจริง ~0.1–0.3). ไม่มีของตรง → เขียนเอง แล้ว <code>store</code> ไว้</div>
+      <div class="verdict">⚠️ ใกล้สุด 0.735 = <b>"ลูกค้ามีกี่คน"</b> แต่นั่นคือนับ<b>ทั้งหมด</b> ไม่ใช่<b>วันนี้</b> — ระยะ 0.7+ ยังถือว่าห่าง (ตรงจริงจะ ~0.1–0.3). ไม่มีของตรง → เขียนเอง แล้ว <code>store</code> ไว้</div>
     </div>
   </section>
 
@@ -409,23 +409,23 @@ footer a:hover{text-decoration:underline}
   <section id="recipe">
     <div class="kicker">09 — ลงมือ</div>
     <h2>เจอคำถามใหม่ ทำยังไง</h2>
-    <p>หลักตัดสิน 1 ประโยค: <strong>คำถามต้องใช้ field / join / นิยาม ที่ layer ยังไม่มีไหม?</strong> — มีครบ <em>ข้าม</em> เขียน SQL ได้เลย · ขาด <em>เพิ่ม</em> ที่ชั้นที่ขาดก่อน. <strong>คลิกการ์ดดูว่าต้องทำอะไร</strong></p>
+    <p>หลักตัดสิน 1 ประโยค: <strong>คำถามต้องใช้ field / join / นิยาม ที่ layer ยังไม่มีไหม?</strong> — มีครบ <em>ข้าม</em> เขียน SQL ได้เลย · ขาด <em>เพิ่ม</em> ที่ชั้นที่ขาดก่อน. <strong>คลิกการ์ดพลิกดูว่าต้องทำอะไร</strong></p>
 
     <div class="grid g4" style="margin-top:22px">
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num" style="color:var(--green)">ข้าม</div><h4>field + join ครบ</h4><p>เช่น ลูกค้าซื้อเยอะสุด · order ยังไม่จ่าย · สมัครวันนี้</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-f"><div class="num" style="color:var(--green)">ข้าม</div><h4>field + join ครบ</h4><p>เช่น ลูกค้าซื้อเยอะสุด · order ยังไม่จ่าย · สมัครวันนี้</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b"><div class="lbl">ทำแค่</div><h4>เขียน SQL เลย</h4><p><code>wren --sql "..."</code> · อยากเก็บ → append <code>queries.yml</code></p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num" style="color:var(--amber)">+col</div><h4>ขาด column</h4><p>DB มี field แต่ model ไม่ประกาศ (เช่น national_id ที่ mask)</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-f"><div class="num" style="color:var(--amber)">+col</div><h4>ขาด column</h4><p>DB มี field แต่ model ไม่ประกาศ (เช่น national_id ที่ mask)</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b" style="border-color:var(--amber)"><div class="lbl" style="color:var(--amber)">เพิ่มที่</div><h4>models/*/metadata.yml</h4><p>เพิ่ม column → <code>wren context build</code></p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num" style="color:var(--cyan)">+join</div><h4>ขาด relationship</h4><p>ตารางใหม่ที่ยังไม่ผูก (เช่น order_items)</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-f"><div class="num" style="color:var(--cyan)">+join</div><h4>ขาด relationship</h4><p>ตารางใหม่ที่ยังไม่ผูก (เช่น order_items)</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b" style="border-color:var(--cyan)"><div class="lbl" style="color:var(--cyan)">เพิ่มที่</div><h4>relationships.yml</h4><p>เพิ่ม block join → <code>wren context build</code></p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num" style="color:var(--violet)">+นิยาม</div><h4>ศัพท์ใหม่</h4><p>"VIP" / "churn" — field ครบ แต่ AI เดาความหมายไม่ได้</p><div class="hint">คลิก ↻</div></div>
+        <div class="trap-f"><div class="num" style="color:var(--violet)">+นิยาม</div><h4>ศัพท์ใหม่</h4><p>"VIP" / "churn" — field ครบ แต่ AI เดาความหมายไม่ได้</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b" style="border-color:var(--violet)"><div class="lbl" style="color:var(--violet)">เพิ่มที่</div><h4>instructions.md</h4><p>นิยามศัพท์ → <code>build</code> + <code>memory index</code></p></div>
       </div></button>
     </div>
@@ -450,12 +450,12 @@ footer a:hover{text-decoration:underline}
       <tbody>
         <tr><td>รัน SQL (ชื่อ model)</td><td><code>wren --sql "SELECT ..." -o table</code></td></tr>
         <tr><td>ดู SQL ที่ expand จริง</td><td><code>wren dry-plan --sql "..."</code></td></tr>
-        <tr><td>validate ไม่คืน row</td><td><code>wren dry-run --sql "..."</code></td></tr>
-        <tr><td>compile manifest</td><td><code>wren context build</code></td></tr>
+        <tr><td>ตรวจ SQL ไม่คืน row</td><td><code>wren dry-run --sql "..."</code></td></tr>
+        <tr><td>compile → mdl.json</td><td><code>wren context build</code></td></tr>
         <tr><td>index memory</td><td><code>wren memory index</code></td></tr>
         <tr><td>หา query เก่าคล้าย</td><td><code>wren memory recall -q "..."</code></td></tr>
-        <tr><td>เก็บ NL↔SQL</td><td><code>wren memory store --nl "..." --sql "..."</code></td></tr>
-        <tr><td>browse ที่จำไว้</td><td><code>wren memory list</code></td></tr>
+        <tr><td>เก็บคู่ คำถาม↔SQL</td><td><code>wren memory store --nl "..." --sql "..."</code></td></tr>
+        <tr><td>ดูรายการที่จำไว้</td><td><code>wren memory list</code></td></tr>
         <tr><td>ดู/สลับ profile</td><td><code>wren profile list · switch &lt;name&gt;</code></td></tr>
       </tbody>
     </table>
