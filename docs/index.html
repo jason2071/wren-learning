@@ -494,13 +494,17 @@ footer a:hover{text-decoration:underline}
 <script>
 // progress + scroll-spy
 const prog=document.getElementById('prog'),secs=[...document.querySelectorAll('section')],links=[...document.querySelectorAll('nav a')];
+let navLock=false,navTimer;
+const setActive=id=>links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+window.lockSpyTo=id=>{navLock=true;setActive(id);clearTimeout(navTimer);navTimer=setTimeout(()=>navLock=false,900);};
 addEventListener('scroll',()=>{
   const h=document.documentElement,sc=h.scrollTop,mx=h.scrollHeight-h.clientHeight;
   prog.style.width=(mx>0?sc/mx*100:0)+'%';
+  if(navLock)return;                          // คลิก nav → ล็อก active ไว้ระหว่าง smooth-scroll
   let cur=secs[0].id;
   for(const s of secs){if(sc>=s.offsetTop-110)cur=s.id;}
   if(sc>=mx-2)cur=secs[secs.length-1].id;   // ถึงล่างสุด → active section สุดท้าย (กันค้างที่ตัวก่อนหน้า)
-  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
+  setActive(cur);
 },{passive:true});
 
 // mobile nav toggle
@@ -513,6 +517,7 @@ navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{
   if(!el)return;
   e.preventDefault();
   closeNav();
+  window.lockSpyTo(id);                        // active ทันที + ล็อกกัน spy override ระหว่าง scroll
   const y=el.getBoundingClientRect().top+window.scrollY-18;
   window.scrollTo({top:y,behavior:'smooth'});
   history.replaceState(null,'','#'+id);
