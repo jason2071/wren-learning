@@ -1,5 +1,8 @@
 # Recipe: มีคำถามใหม่ ต้องทำยังไง
 
+> **ไฟล์นี้ = วิธีตัดสินใจ + ขั้นตอน เมื่อเจอคำถามใหม่** (flowchart, ทางลัด 3 ระดับ, กลุ่ม A/B/C/D, ตาราง "แตะไฟล์ไหน")
+> ภาพรวมครบ / ติดตั้ง / ตัวอย่างเต็ม end-to-end → ดู [`wren_manual.md`](wren_manual.md)
+
 checklist ใช้ซ้ำได้ทุกคำถามใหม่ — พิมพ์อะไร, แอดไฟล์ไหน, รันยังไง
 ตัวอย่างจริงในไฟล์นี้: **"order ล่าสุด ใครเป็นคนสั่ง"**
 
@@ -89,13 +92,9 @@ wren memory load queries.yml              # ใส่ curated
 
 ---
 
-## เตรียม shell (ทุกครั้งก่อนรัน)
+## เตรียม shell
 
-```bash
-cd ~/Desktop/work/my-wren-project
-source ~/.venvs/wren/bin/activate
-export $(grep -v '^#' .env | xargs)
-```
+ก่อนรันคำสั่งใดๆ ต้อง `cd` เข้าโปรเจกต์ + activate venv + export `.env` ครบทั้ง 3 อย่าง — ดูรายละเอียด [`wren_manual.md`](wren_manual.md) §2.3
 
 ---
 
@@ -248,20 +247,20 @@ columns:
 ```
 แล้ว `wren context build`. **โดย default ไม่ควรเปิด** — masking ออกแบบมากันรั่ว ([playbook](wren_playbook.md) Trap 3)
 
-### กลุ่ม C — ต้องเพิ่ม **relationship** (ตารางใหม่ที่ยังไม่ผูก)
+### กลุ่ม C — ต้องเพิ่ม **relationship** (join ที่ยังไม่ผูก)
 
-ตัวอย่าง: เพิ่มตาราง `order_items` แล้วถาม "สินค้าชิ้นไหนขายดี" → ต้อง:
-1. สร้าง `models/order_items/metadata.yml` (ประกาศ table + columns)
+ตัวอย่าง: อยากถาม "สินค้าชิ้นไหนขายดี" ต้อง join `order_items` → `products` แต่ relationship ยังไม่มี → ต้อง:
+1. (ถ้าตารางใหม่) สร้าง `models/<t>/metadata.yml` ประกาศ table + columns ก่อน
 2. เพิ่ม block ใน `relationships.yml`:
 ```yaml
-  - name: order_items_to_orders
-    models: [order_items, orders]
+  - name: item_products
+    models: [order_items, products]
     join_type: MANY_TO_ONE
-    condition: order_items.order_id = orders.order_id
+    condition: order_items.product_id = products.product_id
 ```
 3. `wren context build` → ถาม join ข้ามได้
 
-> โปรเจกต์นี้มีแค่ `customers` + `orders` → เคสนี้เป็นตัวอย่างสมมติ
+> โปรเจกต์นี้มี model: `customers`, `orders`, `products`, `order_items` แล้ว — relationship ที่ผูกไว้: `order_customers`, `item_orders`, `item_products` (เคสบนคือ `item_products` ซึ่ง **มีอยู่แล้ว** ยกเป็นรูปแบบให้ดู; เพิ่มจริงเมื่อมี join ใหม่ที่ยังไม่ผูก)
 
 ### กลุ่ม D — ต้องเพิ่ม **นิยาม** ใน instructions.md (ศัพท์ธุรกิจใหม่)
 

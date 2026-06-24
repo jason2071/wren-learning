@@ -2,12 +2,14 @@
 
 คู่มือลงมือ: ปลด "กับดัก" ใน demo seed ทีละอัน แล้วเทียบ raw SQL (ตกหลุม) vs Wren (รอด)
 
-> seed: `demo_db/seed_wren_demo.sql` — มี **4 กับดัก** ในตัวเดียว (350 `customers_v1` / 200 `customers_v2` / 1200 `orders`)
+> **ไฟล์นี้ = สคริปต์ demo เล่นจริง copy-paste ได้** · concept → `wren_concept.md` · ครบทุกอย่าง → `wren_manual.md`
+
+> seed: `demo_db/seed_wren_demo.sql` — มี **5 กับดัก** ในตัวเดียว (350 `customers_v1` / 200 `customers_v2` / 1200 `orders` / 40 `products` / 3000 `order_items`)
 > **ไม่ต้อง seed หลายแบบ** ความต่างอยู่ที่ config layer ปลดกับดัก ไม่ใช่ data
 
 ---
 
-## กับดักทั้ง 4
+## กับดักทั้ง 5
 
 | # | กับดัก | raw SQL พลาดยังไง | Wren แก้ด้วย |
 |---|---|---|---|
@@ -15,6 +17,7 @@
 | 2 | `status` เป็นเลขเปล่า | ไม่รู้ 2=paid | `instructions.md` |
 | 3 | คอลัมน์ลับ `email/phone/national_id` | SELECT เห็นหมด | masking (ตัด column จาก model) |
 | 4 | `created_at` vs `paid_at` | กรองเวลาผิดตัว | `instructions.md` |
+| 5 | `products.price` (list ปัจจุบัน) ≠ ราคาขายจริง | คูณ list price → revenue เป่าเกิน | ใช้ `order_items.unit_price` (`instructions.md`) |
 
 จุดสำคัญ: ตอน config ยังไม่ตั้ง Wren = passthrough → ตกหลุมเหมือน raw SQL ทุกประการ
 
@@ -22,7 +25,7 @@
 
 ## เคสเทียบ — เห็นความต่างชัด ๆ (เลขจริงจาก seed)
 
-ถามคำถามเดียวกัน 4 ข้อ → คน/LLM ที่เขียน SQL ตรง ๆ ได้เลข **ผิด** ส่วน Wren ที่มี layer ได้เลข **ถูก**
+ถามคำถามเดียวกัน 5 ข้อ → คน/LLM ที่เขียน SQL ตรง ๆ ได้เลข **ผิด** ส่วน Wren ที่มี layer ได้เลข **ถูก**
 
 ### เคส 1 — "ลูกค้ามีกี่คน" (Trap 1: v1/v2)
 
@@ -60,7 +63,30 @@ raw เป่ายอด **3.5 เท่า** เพราะไม่รู้
 
 agent มองไม่เห็น column ที่ไม่ประกาศใน model = กันรั่วตั้งแต่ต้นทาง
 
-> ตัวเลขพวกนี้มาจาก seed ปัจจุบัน (350/200/1200 rows) รันเองยืนยันได้ด้วย `wren --sql "..." -o table`
+### เคส 5 — "สินค้าขายดี revenue เท่าไร" (Trap 5: list price ≠ ราคาขายจริง)
+
+`products.price` = ราคา list ปัจจุบัน (สูงกว่าตอนขายจริง ~15%) — revenue รายสินค้า **ต้อง** ใช้ `order_items.unit_price * quantity` แล้ว join orders กรอง `status=2` ห้ามคูณ `products.price`
+
+| | SQL | ผล |
+|---|---|---|
+| ❌ raw (คูณ products.price, ไม่กรอง status) | `SELECT SUM(oi.quantity*p.price) ... JOIN products p ...` | **2,328,750** (list price × ทุก order) |
+| ✅ Wren (unit_price + status=2) | `SELECT SUM(oi.quantity*oi.unit_price) ... WHERE o.status=2` | **570,000** |
+
+ต่าง **~4 เท่า** — raw หยิบ `products.price` (ราคาปัจจุบัน) มาคูณ ทั้งที่ขายจริงราคาต่ำกว่า + ไม่กรอง paid
+
+SQL ที่ถูก (top 5 รายสินค้า):
+```sql
+SELECT p.name, SUM(oi.quantity*oi.unit_price) AS revenue
+FROM order_items oi
+JOIN products p ON p.product_id = oi.product_id
+JOIN orders   o ON o.order_id   = oi.order_id
+WHERE o.status = 2
+GROUP BY p.name
+ORDER BY revenue DESC
+LIMIT 5
+```
+
+> ตัวเลขพวกนี้มาจาก seed ปัจจุบัน (350/200/1200/40/3000 rows) รันเองยืนยันได้ด้วย `wren --sql "..." -o table`
 
 ---
 
@@ -228,39 +254,12 @@ wren memory recall --query "สมัครวันนี้กี่คน"   
 wren memory list                                 # browse คู่ทั้งหมดที่จำไว้
 ```
 
-> 2 คู่นี้อยู่ใน `queries.yml` แล้ว → `wren memory index` ก็ load เข้าให้เลย (ไม่ต้อง store มือ)
+> 2 คู่นี้อยู่ใน `queries.yml` แล้ว → `wren memory load queries.yml` เข้า store ให้เลย (ไม่ต้อง store มือ — `load` ไม่ใช่ `index`)
 > จุดสำคัญ: recall **หยิบของเก่าที่คล้าย** ไม่ได้เขียนใหม่ — คล้าย ≠ ถูก ต้องดู dist + ตรวจ SQL
 
 ---
 
-## recall สวยๆ (อ่านง่าย)
-
-table default รกไป (มี column `text`/`datasource`/`tags`/`created_at` เกิน) — ใช้ `-o json | jq` กรองเหลือ dist + nl + sql
-
-**one-liner** (keys จริง: `_distance` / `nl_query` / `sql_query`):
-```bash
-wren memory recall -q "ลูกค้ามีกี่คน" -l 3 -o json \
-  | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
-```
-ผล:
-```text
-dist 0      ลูกค้ามีกี่คน
-    SELECT COUNT(*) AS customer_count FROM customers
-dist 0.573  List all customers
-    SELECT * FROM customers LIMIT 100
-dist 0.718  Total customer_id in orders
-    SELECT SUM(customer_id) FROM orders
-```
-> dist ต่ำ = ใกล้ (0 = ตรงเป๊ะ). `-l` = จำนวนผล (default 3)
-
-**ทำเป็น function** — ใส่ใน `~/.zshrc` แล้วเรียก `wmr "คำถาม"`:
-```bash
-wmr() {
-  wren memory recall -q "$1" -l "${2:-3}" -o json \
-    | jq -r '.[] | "dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n"'
-}
-# ใช้: wmr "สมัครวันนี้กี่คน"      ·  wmr "revenue" 5   (เอา 5 ผล)
-```
+> recall อ่านง่าย (`-o json | jq` กรองเหลือ dist+nl+sql) + ฟังก์ชัน `wmr` → ดู `wren_manual.md` §6 Memory
 
 ---
 
