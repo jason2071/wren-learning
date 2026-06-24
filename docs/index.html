@@ -280,7 +280,7 @@ footer a:hover{text-decoration:underline}
 <nav>
   <div class="brand">Wren<i>AI</i><small>คู่มือเข้าใจง่าย</small></div>
   <a href="#what"><span class="nn">01</span> Wren คืออะไร</a>
-  <a href="#traps"><span class="nn">02</span> 4 กับดัก</a>
+  <a href="#traps"><span class="nn">02</span> 5 กับดัก</a>
   <a href="#compare"><span class="nn">03</span> มี vs ไม่มี</a>
   <a href="#parts"><span class="nn">04</span> องค์ประกอบ</a>
   <a href="#memory"><span class="nn">05</span> Memory</a>
@@ -309,9 +309,9 @@ footer a:hover{text-decoration:underline}
   <!-- TRAPS -->
   <section id="traps">
     <div class="kicker">02 — ปัญหา</div>
-    <h2>4 กับดักของฐานข้อมูลจริง</h2>
+    <h2>5 กับดักของฐานข้อมูลจริง</h2>
     <p>DB จริงมักรก: ความรู้กระจุกในหัวคนเก่า. คนใหม่/AI ที่ไม่รู้บริบท → เขียน SQL ผิดแบบ <em>เงียบๆ</em> (ได้เลข แต่ผิด). <strong>คลิกการ์ดเพื่อพลิกดูวิธี Wren แก้</strong></p>
-    <div class="grid g4" style="margin-top:22px">
+    <div class="grid g3" style="margin-top:22px">
       <button class="trap"><div class="trap-in">
         <div class="trap-f"><div class="num">v1≠v2</div><h4>ตารางตายปนใช้งาน</h4><p>customers_v1 (ตาย) ปน v2 — LLM นับ/join ผิดตาราง</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b"><div class="lbl">Wren แก้</div><h4>alias model + ลบ v1</h4><p>model <code>customers</code> ชี้ไป <code>customers_v2</code> เสมอ · v1 หายไป</p></div>
@@ -328,6 +328,10 @@ footer a:hover{text-decoration:underline}
         <div class="trap-f"><div class="num">⏱</div><h4>เวลาหลายตัว</h4><p>created_at vs paid_at — กรองผิดตัว เลขเพี้ยน</p><div class="hint">คลิกพลิก ↻</div></div>
         <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "ใช้ paid_at กรองเวลาจ่าย ไม่ใช่ created_at"</p></div>
       </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">฿≠฿</div><h4>ราคา list ≠ ราคาขายจริง</h4><p>products.price = list ปัจจุบัน (สูงกว่า ~15%) — คิด revenue รายสินค้าผิด เป่ายอด</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "revenue รายสินค้า = <code>order_items.unit_price × quantity</code> + กรอง status=2" ห้ามใช้ <code>products.price</code></p></div>
+      </div></button>
     </div>
   </section>
 
@@ -335,20 +339,21 @@ footer a:hover{text-decoration:underline}
   <section id="compare">
     <div class="kicker">03 — เทียบ</div>
     <h2>คำถามเดียวกัน เลขคนละเรื่อง</h2>
-    <p>กดสลับ <em>raw SQL</em> ↔ <em>Wren</em> ดูว่าเลขเปลี่ยนยังไง (เลขจริงจาก demo seed: 200 ลูกค้า / 1200 orders)</p>
+    <p>กดสลับ <em>raw SQL</em> ↔ <em>Wren</em> ดูว่าเลขเปลี่ยนยังไง (เลขจริงจาก demo seed: 200 ลูกค้า / 1200 orders / 40 products / 3000 order_items)</p>
     <div class="grid" style="gap:20px;margin-top:22px" id="cmpHost"></div>
   </section>
 
   <!-- PARTS -->
   <section id="parts">
     <div class="kicker">04 — องค์ประกอบ</div>
-    <h2>4 ชิ้นที่ทำงานร่วมกัน</h2>
+    <h2>5 ชิ้นที่ทำงานร่วมกัน</h2>
     <p>บริบทที่เคยอยู่ในหัวคน ถูกย้ายมาเป็นไฟล์ config ที่ทั้งคนและ AI อ่านได้</p>
     <div class="grid g2" style="margin-top:22px">
       <div class="card"><span class="ic">📖</span><span class="tag">models/</span><h4>พจนานุกรมชื่อ</h4><p><code>name</code> = ชื่อที่ถาม · <code>table_reference</code> = ตารางจริง · <code>columns</code> ที่ประกาศเท่านั้นที่เห็น (ไม่ประกาศ = masked)</p></div>
-      <div class="card"><span class="ic">🔗</span><span class="tag">relationships.yml</span><h4>แผนที่ join</h4><p>บอกว่าตารางต่อกันยังไง (orders → customers MANY_TO_ONE) → ถามข้ามตารางได้ AI ไม่ join มั่ว</p></div>
+      <div class="card"><span class="ic">🔗</span><span class="tag">relationships.yml</span><h4>แผนที่ join</h4><p>บอกว่าตารางต่อกันยังไง (orders → customers · order_items → products MANY_TO_ONE) → ถามข้ามตารางได้ AI ไม่ join มั่ว</p></div>
       <div class="card"><span class="ic">📜</span><span class="tag">instructions.md</span><h4>กติกาธุรกิจภาษาคน</h4><p>นิยามที่ SQL บอกไม่ได้: active คืออะไร, revenue นับยังไง, status เลขไหนแปลว่าอะไร</p></div>
-      <div class="card"><span class="ic">🧠</span><span class="tag">.wren/memory/</span><h4>ความจำ</h4><p>เก็บ context + คู่ "คำถาม↔SQL" เก่า เป็น vector — ค้นด้วยความหมาย ไม่ใช่ตรงตัวอักษร</p></div>
+      <div class="card"><span class="ic">📝</span><span class="tag">queries.yml</span><h4>คู่ คำถาม↔SQL ที่ curate</h4><p>ตัวอย่างที่เขียนเอง (git-tracked) — โหลดเข้า memory ด้วย <code>memory load</code> เพื่อให้ recall แม่นกับคำถามซ้ำๆ</p></div>
+      <div class="card"><span class="ic">🧠</span><span class="tag">.wren/memory/</span><h4>ความจำ</h4><p>เก็บ context + คู่ "คำถาม↔SQL" เป็น vector — ค้นด้วยความหมาย ไม่ใช่ตรงตัวอักษร (generated)</p></div>
     </div>
   </section>
 
@@ -356,13 +361,15 @@ footer a:hover{text-decoration:underline}
   <section id="memory">
     <div class="kicker">05 — Memory</div>
     <h2>Memory — สมุดโน้ตอัจฉริยะ</h2>
-    <p>หัวใจที่ทำให้ Wren <em>ยิ่งใช้ยิ่งฉลาด</em> — มี 3 คำสั่งหลัก</p>
+    <p>หัวใจที่ทำให้ Wren <em>ยิ่งใช้ยิ่งฉลาด</em> — คำสั่งหลัก</p>
     <div class="grid" style="gap:13px;margin-top:22px">
       <div class="mcmd"><span class="mc">fetch</span><div><h4>เปิดสมุดดูบริบทที่เกี่ยวข้อง</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
       <div class="mcmd"><span class="mc">recall</span><div><h4>เคยมีคนถามแบบนี้ไหม</h4><p>หาคู่ "คำถาม↔SQL" เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
       <div class="mcmd"><span class="mc">store</span><div><h4>จดคำตอบที่ถูกไว้</h4><p>บันทึกคู่ "คำถาม↔SQL" ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
+      <div class="mcmd"><span class="mc">load</span><div><h4>โหลด queries.yml เข้า store</h4><p>import คู่ที่ curate ไว้ (git-tracked) → <code>wren memory load queries.yml</code></p></div></div>
     </div>
-    <div class="note">subcommands ทั้งหมด (ตรวจกับ CLI แล้ว): <code>index · fetch · store · recall · list · forget · load · reset · status</code>. <code>wren memory index</code> default โหลด <code>queries.yml</code> + <code>instructions.md</code> เข้า memory อัตโนมัติ</div>
+    <div class="note warn"><b>load ≠ index:</b> <code>wren memory index</code> สร้างแค่ <em>auto browse queries</em> (List all X) + index schema — <b>ไม่ดึงคู่จาก queries.yml เข้า recall</b>. คู่ที่เขียนเองเข้า store ด้วย <code>wren memory load queries.yml</code> เท่านั้น · <code>memory dump</code> = ทิศกลับ เขียนทับ queries.yml</div>
+    <div class="note">subcommands ทั้งหมด (ตรวจกับ CLI แล้ว): <code>index · fetch · store · recall · load · dump · list · forget · reset · status</code></div>
   </section>
 
   <!-- DISTANCE -->
@@ -401,7 +408,8 @@ footer a:hover{text-decoration:underline}
       <div class="step"><div class="si"></div><div class="sc"><b>สร้าง models/ + relationships</b><p>เขียนเอง หรือให้ AI generate จาก schema</p></div></div>
       <div class="step"><div class="si"></div><div class="sc"><b>ใส่กติกาธุรกิจ</b> <code>instructions.md</code><p>นิยาม active / revenue / status codes</p></div></div>
       <div class="step"><div class="si"></div><div class="sc"><b>compile</b> <code>wren context build</code><p>ได้ <code>target/mdl.json</code></p></div></div>
-      <div class="step"><div class="si"></div><div class="sc"><b>index ความจำ</b> <code>wren memory index</code><p>ได้ <code>.wren/memory/</code> — ถามได้แล้ว</p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>index ความจำ</b> <code>wren memory index</code><p>index schema + instructions → ได้ <code>.wren/memory/</code></p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>โหลดคู่ที่ curate</b> <code>wren memory load queries.yml</code><p>เอาคู่ คำถาม↔SQL จาก <code>queries.yml</code> เข้า recall — ถามได้แล้ว</p></div></div>
     </div>
   </section>
 
@@ -453,7 +461,8 @@ footer a:hover{text-decoration:underline}
         <tr><td>ดู SQL ที่ expand จริง</td><td><code>wren dry-plan --sql "..."</code></td></tr>
         <tr><td>ตรวจ SQL ไม่คืน row</td><td><code>wren dry-run --sql "..."</code></td></tr>
         <tr><td>compile → mdl.json</td><td><code>wren context build</code></td></tr>
-        <tr><td>index memory</td><td><code>wren memory index</code></td></tr>
+        <tr><td>index schema/instructions</td><td><code>wren memory index</code></td></tr>
+        <tr><td>โหลด queries.yml → store</td><td><code>wren memory load queries.yml</code></td></tr>
         <tr><td>หา query เก่าคล้าย</td><td><code>wren memory recall -q "..."</code></td></tr>
         <tr><td>เก็บคู่ คำถาม↔SQL</td><td><code>wren memory store --nl "..." --sql "..."</code></td></tr>
         <tr><td>ดูรายการที่จำไว้</td><td><code>wren memory list</code></td></tr>
@@ -537,6 +546,10 @@ const CASES=[
    raw:"WHERE created_at >= now()-'90d'",rawN:195,rawNote:'ใช้ created_at + ไม่กรอง paid',
    wren:"WHERE status=2 AND paid_at >= now()-'90d'",wrenN:57,wrenNote:'paid_at + กรอง paid',
    foot:'ต่าง <b>3.4 เท่า</b> — เลือก timestamp ผิด + ลืมกรอง paid'},
+  {q:'revenue รายสินค้า',trap:'Trap 5 · ราคา',
+   raw:'SUM(qty × products.price)',rawN:2328750,rawNote:'list price ปัจจุบัน + ไม่กรอง status',
+   wren:'SUM(qty × order_items.unit_price) WHERE status=2',wrenN:570000,wrenNote:'ราคาตอนขายจริง + เฉพาะ paid',
+   foot:'raw เป่ายอด <b>~4 เท่า</b> — ใช้ราคา list แทนราคาขาย + นับ order ที่ยังไม่จ่าย'},
 ];
 const fmt=n=>n.toLocaleString('en-US');
 function buildCmp(c,i){

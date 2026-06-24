@@ -579,39 +579,4 @@ wren profile list / debug / switch <name>
 
 ---
 
-<a id="12"></a>
-## 12. สอนคนอื่น — สคริปต์ demo 10 นาที
-
-ลำดับเล่าให้เห็นคุณค่า Wren:
-
-**(1) ตั้งคำถามที่ดูง่าย** — "ลูกค้า active 90 วันมีกี่คน?"
-
-**(2) ให้เขาลองเขียน SQL เองบน DB จริง** → มักได้ ~195 (หยิบ v1, ไม่กรอง status, ใช้ created_at)
-```bash
-psql ... -c "SELECT COUNT(DISTINCT c.id) FROM customers_v1 c JOIN orders o ON o.customer_id=c.id WHERE o.created_at >= now() - interval '90 days'"
-# → 195 (ผิด!)
-```
-
-**(3) เฉลยกับดัก** — เปิด `instructions.md` ให้ดูว่า "active" จริงๆ คือ status=2 + paid_at
-
-**(4) ถามผ่าน Wren** →
-```bash
-wren --sql "SELECT COUNT(DISTINCT customer_id) FROM orders WHERE status=2 AND paid_at >= now() - interval '90 days'" -o table
-# → 57 (ถูก)
-```
-
-**(5) โชว์ว่า Wren ป้องกันยังไง:**
-```bash
-wren dry-plan --sql "SELECT first_name FROM customers"   # เห็น customers → customers_v2 อัตโนมัติ
-wren --sql "SELECT national_id FROM customers"           # error — คอลัมน์ถูกซ่อน
-```
-
-**(6) ปิดด้วยกับดัก #5 (เลขช็อก)** — revenue รายสินค้า WRONG=2,328,750 vs CORRECT=570,000
-
-**(7) สรุป 1 ประโยค:** "Wren = ที่เก็บกติกาธุรกิจ + ชื่อตารางที่ถูก ไว้ที่เดียว ให้คนและ AI ถามได้ตรงกันโดยไม่ตกหลุม"
-
-> เวอร์ชัน interactive เปิด `docs/index.html` ในเบราว์เซอร์ประกอบการสอนได้
-
----
-
 *คู่มือนี้อ้างอิงสถานะจริงของ repo · ตัวเลขจาก seed (deterministic) · คำสั่งทดสอบกับ wren CLI ในโปรเจกต์นี้*
