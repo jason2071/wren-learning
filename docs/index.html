@@ -77,6 +77,23 @@ nav a:hover{color:var(--fg);background:#00000006}
 nav a.on{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
 nav a.on .nn{color:var(--amber)}
 
+/* mode switcher (Interactive ↔ คู่มือเต็ม) */
+.modes{display:flex;gap:4px;background:var(--ink2);border:1px solid var(--line);
+  border-radius:11px;padding:4px;margin:12px 0 10px}
+.modes a{flex:1;text-align:center;font-family:var(--thai);font-size:12px;font-weight:500;
+  padding:7px 6px;border-radius:8px;text-decoration:none;color:var(--mut);transition:.2s;
+  border-left:none;display:block}
+.modes a.on{background:var(--panel);color:var(--amber);font-weight:600;box-shadow:0 1px 3px #1b1f2914}
+.modes a:hover:not(.on){color:var(--fg);background:#00000006}
+
+/* hero CTA → คู่มือเต็ม */
+.btn-manual{display:inline-flex;align-items:center;gap:9px;margin-top:32px;
+  font-family:var(--thai);font-size:14.5px;font-weight:600;color:var(--amber);text-decoration:none;
+  border:1px solid var(--amber);background:var(--amber-soft);padding:11px 20px;border-radius:11px;
+  transition:.25s;width:fit-content}
+.btn-manual:hover{background:var(--amber);color:#fff;transform:translateX(3px)}
+.btn-manual .ar{transition:.25s}.btn-manual:hover .ar{transform:translateX(3px)}
+
 main{padding:46px 0 120px;min-width:0}
 section{margin-bottom:78px;scroll-margin-top:70px}
 .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;text-transform:uppercase;
@@ -279,6 +296,10 @@ footer a:hover{text-decoration:underline}
 <div class="wrap">
 <nav>
   <div class="brand">Wren<i>AI</i><small>คู่มือเข้าใจง่าย</small></div>
+  <div class="modes">
+    <a class="on" href="index.html">✦ Interactive</a>
+    <a href="wren_manual.html">📖 คู่มือเต็ม</a>
+  </div>
   <a href="#what"><span class="nn">01</span> Wren คืออะไร</a>
   <a href="#traps"><span class="nn">02</span> 5 กับดัก</a>
   <a href="#compare"><span class="nn">03</span> มี vs ไม่มี</a>
@@ -304,6 +325,7 @@ footer a:hover{text-decoration:underline}
       <div class="arrow">→</div>
       <div class="node"><b>PostgreSQL</b><span>SQL ที่ถูก</span></div>
     </div>
+    <a class="btn-manual reveal d5" href="wren_manual.html">📖 อ่านคู่มือฉบับเต็ม — ติดตั้ง · เพิ่มตาราง · troubleshoot <span class="ar">→</span></a>
   </section>
 
   <!-- TRAPS -->
@@ -473,7 +495,7 @@ footer a:hover{text-decoration:underline}
   </section>
 
   <footer>
-    <span>WrenAI semantic layer · demo project</span>
+    <span>WrenAI semantic layer · demo project · <a href="wren_manual.html">คู่มือฉบับเต็ม →</a></span>
     <span>repo ทางการ: <a href="https://github.com/Canner/WrenAI" target="_blank" rel="noopener noreferrer">Canner/WrenAI</a></span>
   </footer>
 </main>
