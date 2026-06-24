@@ -296,14 +296,14 @@ footer a:hover{text-decoration:underline}
 <div class="wrap">
 <nav>
   <a class="brand" href="../index.html" style="text-decoration:none;color:inherit;display:block">Wren<i>AI</i><small>concept · ↩ หน้าหลัก</small></a>
-  <a href="#what"><span class="nn">01</span> Wren คืออะไร</a>
-  <a href="#traps"><span class="nn">02</span> 5 กับดัก</a>
-  <a href="#compare"><span class="nn">03</span> มี vs ไม่มี</a>
-  <a href="#parts"><span class="nn">04</span> องค์ประกอบ</a>
+  <a href="#what"><span class="nn">01</span> What is Wren</a>
+  <a href="#traps"><span class="nn">02</span> 5 Database Traps</a>
+  <a href="#compare"><span class="nn">03</span> With vs. Without</a>
+  <a href="#parts"><span class="nn">04</span> Components</a>
   <a href="#memory"><span class="nn">05</span> Memory</a>
-  <a href="#distance"><span class="nn">06</span> อ่าน distance</a>
-  <a href="#loop"><span class="nn">07</span> วงจรฉลาดขึ้น</a>
-  <a href="#next"><span class="nn">08</span> ลงมือทำต่อ</a>
+  <a href="#distance"><span class="nn">06</span> Reading Distance</a>
+  <a href="#loop"><span class="nn">07</span> The Learning Loop</a>
+  <a href="#next"><span class="nn">08</span> Next Steps</a>
 </nav>
 
 <main>
@@ -324,73 +324,73 @@ footer a:hover{text-decoration:underline}
 
   <!-- TRAPS -->
   <section id="traps">
-    <div class="kicker">02 — ปัญหา</div>
-    <h2>5 กับดักของฐานข้อมูลจริง</h2>
+    <div class="kicker">02 — The Problem</div>
+    <h2>5 Real Database Traps</h2>
     <p>DB จริงมักรก: ความรู้กระจุกในหัวคนเก่า. คนใหม่/AI ที่ไม่รู้บริบท → เขียน SQL ผิดแบบ <em>เงียบๆ</em> (ได้เลข แต่ผิด). <strong>คลิกการ์ดเพื่อพลิกดูวิธี Wren แก้</strong></p>
     <div class="grid g3" style="margin-top:22px">
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num">v1≠v2</div><h4>ตารางตายปนใช้งาน</h4><p>customers_v1 (ตาย) ปน v2 — LLM นับ/join ผิดตาราง</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>alias model + ลบ v1</h4><p>model <code>customers</code> ชี้ไป <code>customers_v2</code> เสมอ · v1 หายไป</p></div>
+        <div class="trap-f"><div class="num">v1≠v2</div><h4>Dead table mixed in</h4><p>customers_v1 (ตาย) ปน v2 — LLM นับ/join ผิดตาราง</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren fixes</div><h4>Alias model + drop v1</h4><p>model <code>customers</code> ชี้ไป <code>customers_v2</code> เสมอ · v1 หายไป</p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num">2=?</div><h4>status เป็นเลขเปล่า</h4><p>ไม่รู้ว่า 2 = paid → กรองผิด นับรวม refund</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>เขียนนิยาม "revenue = status 2" ให้คน+AI อ่านตรงกัน</p></div>
+        <div class="trap-f"><div class="num">2=?</div><h4>Status is a bare number</h4><p>ไม่รู้ว่า 2 = paid → กรองผิด นับรวม refund</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren fixes</div><h4>instructions.md</h4><p>เขียนนิยาม "revenue = status 2" ให้คน+AI อ่านตรงกัน</p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num">🔒</div><h4>คอลัมน์ลับ</h4><p>national_id ปนข้อมูลทั่วไป — SELECT เห็นหมด รั่ว</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>masking</h4><p>ไม่ประกาศ column = มองไม่เห็น. ใน demo: national_id ลบแล้ว · email/phone เป็น exercise ให้ลบเอง</p></div>
+        <div class="trap-f"><div class="num">🔒</div><h4>Secret columns</h4><p>national_id ปนข้อมูลทั่วไป — SELECT เห็นหมด รั่ว</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren fixes</div><h4>masking</h4><p>ไม่ประกาศ column = มองไม่เห็น. ใน demo: national_id ลบแล้ว · email/phone เป็น exercise ให้ลบเอง</p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num">⏱</div><h4>เวลาหลายตัว</h4><p>created_at vs paid_at — กรองผิดตัว เลขเพี้ยน</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "ใช้ paid_at กรองเวลาจ่าย ไม่ใช่ created_at"</p></div>
+        <div class="trap-f"><div class="num">⏱</div><h4>Multiple timestamps</h4><p>created_at vs paid_at — กรองผิดตัว เลขเพี้ยน</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren fixes</div><h4>instructions.md</h4><p>นิยาม "ใช้ paid_at กรองเวลาจ่าย ไม่ใช่ created_at"</p></div>
       </div></button>
       <button class="trap"><div class="trap-in">
-        <div class="trap-f"><div class="num">฿≠฿</div><h4>ราคา list ≠ ราคาขายจริง</h4><p>products.price = list ปัจจุบัน (สูงกว่า ~15%) — คิด revenue รายสินค้าผิด เป่ายอด</p><div class="hint">คลิกพลิก ↻</div></div>
-        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "revenue รายสินค้า = <code>order_items.unit_price × quantity</code> + กรอง status=2" ห้ามใช้ <code>products.price</code></p></div>
+        <div class="trap-f"><div class="num">฿≠฿</div><h4>List price ≠ sale price</h4><p>products.price = list ปัจจุบัน (สูงกว่า ~15%) — คิด revenue รายสินค้าผิด เป่ายอด</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren fixes</div><h4>instructions.md</h4><p>นิยาม "revenue รายสินค้า = <code>order_items.unit_price × quantity</code> + กรอง status=2" ห้ามใช้ <code>products.price</code></p></div>
       </div></button>
     </div>
   </section>
 
   <!-- COMPARE -->
   <section id="compare">
-    <div class="kicker">03 — เทียบ</div>
-    <h2>คำถามเดียวกัน เลขคนละเรื่อง</h2>
+    <div class="kicker">03 — Compare</div>
+    <h2>Same Question, Different Numbers</h2>
     <p>กดสลับ <em>raw SQL</em> ↔ <em>Wren</em> ดูว่าเลขเปลี่ยนยังไง (เลขจริงจาก demo seed: 200 ลูกค้า / 1200 orders / 40 products / 3000 order_items)</p>
     <div class="grid" style="gap:20px;margin-top:22px" id="cmpHost"></div>
   </section>
 
   <!-- PARTS -->
   <section id="parts">
-    <div class="kicker">04 — องค์ประกอบ</div>
-    <h2>5 ชิ้นที่ทำงานร่วมกัน</h2>
+    <div class="kicker">04 — Components</div>
+    <h2>5 Components Working Together</h2>
     <p>บริบทที่เคยอยู่ในหัวคน ถูกย้ายมาเป็นไฟล์ config ที่ทั้งคนและ AI อ่านได้</p>
     <div class="grid g2" style="margin-top:22px">
-      <div class="card"><span class="ic">📖</span><span class="tag">models/</span><h4>พจนานุกรมชื่อ</h4><p><code>name</code> = ชื่อที่ถาม · <code>table_reference</code> = ตารางจริง · <code>columns</code> ที่ประกาศเท่านั้นที่เห็น (ไม่ประกาศ = masked)</p></div>
-      <div class="card"><span class="ic">🔗</span><span class="tag">relationships.yml</span><h4>แผนที่ join</h4><p>บอกว่าตารางต่อกันยังไง (orders → customers · order_items → products MANY_TO_ONE) → ถามข้ามตารางได้ AI ไม่ join มั่ว</p></div>
-      <div class="card"><span class="ic">📜</span><span class="tag">instructions.md</span><h4>กติกาธุรกิจภาษาคน</h4><p>นิยามที่ SQL บอกไม่ได้: active คืออะไร, revenue นับยังไง, status เลขไหนแปลว่าอะไร</p></div>
-      <div class="card"><span class="ic">📝</span><span class="tag">queries.yml</span><h4>คู่ คำถาม↔SQL ที่ curate</h4><p>ตัวอย่างที่เขียนเอง (git-tracked) — โหลดเข้า memory ด้วย <code>memory load</code> เพื่อให้ recall แม่นกับคำถามซ้ำๆ</p></div>
-      <div class="card"><span class="ic">🧠</span><span class="tag">.wren/memory/</span><h4>ความจำ</h4><p>เก็บ context + คู่ "คำถาม↔SQL" เป็น vector — ค้นด้วยความหมาย ไม่ใช่ตรงตัวอักษร (generated)</p></div>
+      <div class="card"><span class="ic">📖</span><span class="tag">models/</span><h4>Model</h4><p><code>name</code> = ชื่อที่ถาม · <code>table_reference</code> = ตารางจริง · <code>columns</code> ที่ประกาศเท่านั้นที่เห็น (ไม่ประกาศ = masked)</p></div>
+      <div class="card"><span class="ic">🔗</span><span class="tag">relationships.yml</span><h4>Join map</h4><p>บอกว่าตารางต่อกันยังไง (orders → customers · order_items → products MANY_TO_ONE) → ถามข้ามตารางได้ AI ไม่ join มั่ว</p></div>
+      <div class="card"><span class="ic">📜</span><span class="tag">instructions.md</span><h4>Business rules</h4><p>นิยามที่ SQL บอกไม่ได้: active คืออะไร, revenue นับยังไง, status เลขไหนแปลว่าอะไร</p></div>
+      <div class="card"><span class="ic">📝</span><span class="tag">queries.yml</span><h4>Curated Q↔SQL pairs</h4><p>ตัวอย่างที่เขียนเอง (git-tracked) — โหลดเข้า memory ด้วย <code>memory load</code> เพื่อให้ recall แม่นกับคำถามซ้ำๆ</p></div>
+      <div class="card"><span class="ic">🧠</span><span class="tag">.wren/memory/</span><h4>Memory store</h4><p>เก็บ context + คู่ "คำถาม↔SQL" เป็น vector — ค้นด้วยความหมาย ไม่ใช่ตรงตัวอักษร (generated)</p></div>
     </div>
   </section>
 
   <!-- MEMORY -->
   <section id="memory">
     <div class="kicker">05 — Memory</div>
-    <h2>Memory — สมุดโน้ตอัจฉริยะ</h2>
+    <h2>Memory — The Smart Notebook</h2>
     <p>หัวใจที่ทำให้ Wren <em>ยิ่งใช้ยิ่งฉลาด</em> — คำสั่งหลัก</p>
     <div class="grid" style="gap:13px;margin-top:22px">
-      <div class="mcmd"><span class="mc">fetch</span><div><h4>เปิดสมุดดูบริบทที่เกี่ยวข้อง</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
-      <div class="mcmd"><span class="mc">recall</span><div><h4>เคยมีคนถามแบบนี้ไหม</h4><p>หาคู่ "คำถาม↔SQL" เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
-      <div class="mcmd"><span class="mc">store</span><div><h4>จดคำตอบที่ถูกไว้</h4><p>บันทึกคู่ "คำถาม↔SQL" ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
-      <div class="mcmd"><span class="mc">load</span><div><h4>โหลด queries.yml เข้า store</h4><p>import คู่ที่ curate ไว้ (git-tracked) → <code>wren memory load queries.yml</code></p></div></div>
+      <div class="mcmd"><span class="mc">fetch</span><div><h4>Pull relevant context</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
+      <div class="mcmd"><span class="mc">recall</span><div><h4>Asked before?</h4><p>หาคู่ "คำถาม↔SQL" เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
+      <div class="mcmd"><span class="mc">store</span><div><h4>Save a correct pair</h4><p>บันทึกคู่ "คำถาม↔SQL" ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
+      <div class="mcmd"><span class="mc">load</span><div><h4>Load queries.yml</h4><p>import คู่ที่ curate ไว้ (git-tracked) → <code>wren memory load queries.yml</code></p></div></div>
     </div>
     <div class="note"><b>load ≠ index</b> (จำสั้นๆ): คู่ที่เขียนเองใน <code>queries.yml</code> เข้า recall ด้วย <code>memory load</code> · <code>index</code> สร้างแค่ schema + auto queries. รายละเอียด + คำสั่งครบ → <a href="manual.html#5" style="color:var(--amber)">คู่มือ §5 Memory</a></div>
   </section>
 
   <!-- DISTANCE -->
   <section id="distance">
-    <div class="kicker">06 — อ่านผล</div>
-    <h2>distance: ยิ่งต่ำ ยิ่งใกล้</h2>
+    <div class="kicker">06 — Reading Results</div>
+    <h2>Distance: Lower is Closer</h2>
     <p>recall เรียงผลตามระยะห่างความหมาย. <strong>คล้าย ≠ ถูก</strong> — ต้องดู distance แล้วตรวจ SQL เอง</p>
     <div class="dist" id="distDemo">
       <div class="qline">$ wren memory recall -q <b>"สมัครวันนี้กี่คน"</b></div>
@@ -403,7 +403,7 @@ footer a:hover{text-decoration:underline}
 
   <!-- LOOP -->
   <section id="loop">
-    <div class="kicker">07 — วงจร</div>
+    <div class="kicker">07 — The Loop</div>
     <h2>recall → write → store</h2>
     <p>ครั้งแรกอาจไม่มีอะไรให้ recall → สอนมันด้วย <code>store</code>. ใช้ไปเรื่อยๆ คลังโต → recall แม่นขึ้น → AI ผิดน้อยลง</p>
     <div class="loop">
@@ -415,12 +415,12 @@ footer a:hover{text-decoration:underline}
 
   <!-- NEXT: handoff to manual (how-to) -->
   <section id="next">
-    <div class="kicker">08 — ลงมือทำ</div>
-    <h2>เข้าใจ concept แล้ว → ลงมือ</h2>
+    <div class="kicker">08 — Hands-on</div>
+    <h2>Understand the Concept → Now Act</h2>
     <p>หน้านี้คือ <em>ทำความเข้าใจ</em> Wren. ส่วน <strong>วิธีทำจริง</strong> — ติดตั้ง · build/index/load · เพิ่มตาราง · แก้ปัญหา · cheat-sheet คำสั่ง — อยู่ใน <strong>คู่มือฉบับเต็ม</strong> (copy คำสั่งไปรันได้เลย)</p>
     <div class="grid g3" style="margin-top:22px">
-      <a class="card" href="manual.html#1" style="text-decoration:none;color:inherit"><span class="ic">⚙️</span><span class="tag">manual §1–3</span><h4>ติดตั้ง + วงจร build/index/load</h4><p>venv · .env · 3 คำสั่ง compile (ตัวที่คนสับสนบ่อยสุด)</p></a>
-      <a class="card" href="manual.html#6" style="text-decoration:none;color:inherit"><span class="ic">➕</span><span class="tag">manual §6–7</span><h4>เพิ่มตาราง + คำถามใหม่</h4><p>end-to-end 7 ขั้น · recipe ทางลัด 3 ระดับ</p></a>
+      <a class="card" href="manual.html#1" style="text-decoration:none;color:inherit"><span class="ic">⚙️</span><span class="tag">manual §1–3</span><h4>Setup + build/index/load</h4><p>venv · .env · 3 คำสั่ง compile (ตัวที่คนสับสนบ่อยสุด)</p></a>
+      <a class="card" href="manual.html#6" style="text-decoration:none;color:inherit"><span class="ic">➕</span><span class="tag">manual §6–7</span><h4>Add tables + new questions</h4><p>end-to-end 7 ขั้น · recipe ทางลัด 3 ระดับ</p></a>
       <a class="card" href="manual.html#9" style="text-decoration:none;color:inherit"><span class="ic">🛠</span><span class="tag">manual §9–10</span><h4>Troubleshooting + cheat-sheet</h4><p>error ที่เจอบ่อย + คำสั่งทั้งหมดในที่เดียว</p></a>
     </div>
     <a class="btn-manual" href="manual.html" style="margin-top:28px">📖 เปิดคู่มือฉบับเต็ม <span class="ar">→</span></a>
