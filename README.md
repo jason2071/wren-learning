@@ -3,7 +3,7 @@
 โปรเจกต์เรียนรู้ **WrenAI** — semantic SQL layer ครอบ PostgreSQL
 ให้คน/AI ถามข้อมูลด้วยภาษาคนหรือ SQL ชื่อง่าย แล้ว Wren แปลเป็น SQL จริงที่ตรงตาราง + กติกาธุรกิจ
 
-มาพร้อม demo seed ที่จงใจฝัง **4 กับดัก** (ตารางตาย v1/v2, status เลขเปล่า, คอลัมน์ลับ, created_at vs paid_at)
+มาพร้อม demo seed ที่จงใจฝัง **5 กับดัก** (ตารางตาย v1/v2, status เลขเปล่า, คอลัมน์ลับ, created_at vs paid_at, list price vs ราคาตอนขายจริง)
 เพื่อเทียบ raw SQL (ตกหลุม) กับ Wren (รอด)
 
 📖 **คู่มือ interactive (เปิดได้เลย):** https://jason2071.github.io/wren-learning/
@@ -16,7 +16,7 @@
 |---|---|---|
 | [🌐 live](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — before/after toggle, flip cards, distance bars, mobile nav | อยากดูแบบเล่นได้ |
 | [`docs/wren_concept_guide.md`](docs/wren_concept_guide.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
-| [`docs/wren_demo_playbook.md`](docs/wren_demo_playbook.md) | เล่น 4 กับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
+| [`docs/wren_demo_playbook.md`](docs/wren_demo_playbook.md) | เล่นกับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
 | [`docs/wren_new_question_recipe.md`](docs/wren_new_question_recipe.md) | recipe คำถามใหม่ — เพิ่มไฟล์ไหน รันอะไร ทางลัด | เจอคำถามใหม่ |
 | [`docs/wren_reference.md`](docs/wren_reference.md) | โครงไฟล์ + ตาราง CLI | ตอนลงมือ lookup |
 
@@ -30,11 +30,13 @@ my-wren-project/
 ├── connection.yml            # datasource config (อ่านค่าจาก ${PG_*})
 ├── models/                   # นิยามตาราง — 1 โฟลเดอร์ต่อ 1 model
 │   ├── customers_v2/         #   name: customers (alias) → table: customers_v2
-│   └── orders/
-├── relationships.yml         # join: orders → customers (many_to_one)
+│   ├── orders/
+│   ├── products/             #   name: products → table: products
+│   └── order_items/          #   name: order_items → table: order_items
+├── relationships.yml         # joins: order→customers, item→orders, item→products
 ├── instructions.md           # กติกาธุรกิจ (active, revenue, status codes)
 ├── queries.yml               # คู่ NL↔SQL สำหรับ recall
-├── demo_db/seed_wren_demo.sql# seed PostgreSQL + 4 กับดัก
+├── demo_db/seed_wren_demo.sql# seed PostgreSQL + 5 กับดัก
 ├── docs/                     # เอกสาร 3 ไฟล์ (ตารางบน)
 ├── target/                   # mdl.json (generated — gitignored)
 └── .wren/                    # memory index (generated — gitignored)
@@ -108,6 +110,50 @@ wmr() {
 wren context build                       # แก้ models/*.yml, relationships.yml
 wren context build && wren memory index  # ถ้าแตะ instructions.md / queries.yml
 ```
+
+---
+
+## ตาราง & กับดัก (อ้างอิง)
+
+### ตารางใน demo (หลัง seed)
+
+| ตารางจริง | model name | แถว | หมายเหตุ |
+|---|---|---|---|
+| `customers_v1` | — (ไม่ map) | 350 | ตารางตาย เหยื่อล่อ |
+| `customers_v2` | `customers` | 200 | ตัวจริง — `email/phone/national_id` เป็นคอลัมน์ลับ |
+| `orders` | `orders` | 1200 | `status` เลข 1-5, มี `created_at` กับ `paid_at` |
+| `products` | `products` | 40 | `category_code` เลข 1-5, `price` = list ปัจจุบัน, `is_active` (discontinued) |
+| `order_items` | `order_items` | 3000 | line item, `unit_price` = ราคาตอนขายจริง |
+
+### 5 กับดัก
+
+1. **ตารางตาย** — `customers_v1` (350 แถว ปน) vs `customers_v2` (200 ตัวจริง) → ถ้าหยิบ v1 นับเกิน
+2. **status เลขเปล่า** — `1=pending 2=paid 3=shipped 4=refunded 5=cancelled` → revenue ต้องกรอง `status=2`
+3. **คอลัมน์ลับ** — `email/phone/national_id` ไม่อยู่ใน model `customers` → masked by omission
+4. **created_at vs paid_at** — "active/revenue" ใช้ `paid_at` ไม่ใช่ `created_at` (วันสมัคร)
+5. **list price vs ราคาขายจริง** — `products.price` คือ list ปัจจุบัน (สูงกว่า ~15%) → revenue รายสินค้าต้องใช้ `order_items.unit_price * quantity` + join `orders` กรอง `status=2`
+
+> พิสูจน์ trap #5: query ท้าย `seed_wren_demo.sql` ให้ WRONG=2,328,750 vs CORRECT=570,000
+
+### relationships (`relationships.yml`)
+
+```
+order_items → orders → customers     (item→order→customer)
+order_items → products               (item→product)
+```
+ทั้งหมด `MANY_TO_ONE`. ไม่มี `orders → products` ตรงๆ — ต้องผ่าน `order_items`.
+
+### Wren MDL — type ที่รองรับ
+
+canonical types ([docs](https://docs.getwren.ai/oss/reference/mdl)):
+`VARCHAR · INTEGER · DOUBLE · DATE · TIMESTAMP · BOOLEAN · DECIMAL · JSON`
+
+- `INT`/`TEXT` ใช้ได้ (Wren รับเป็น alias — โปรเจกต์นี้ก็ใช้)
+- เงินใช้ `DECIMAL` (ไม่ใส่ precision เช่น `DECIMAL(10,2)`)
+- bool ใช้ `BOOLEAN` (ไม่ใช่ `BOOL`)
+- หลังแก้ model → `wren context build` จะ validate type ให้เอง
+
+> เอกสารทางการ: https://docs.getwren.ai/oss/introduction
 
 ---
 
