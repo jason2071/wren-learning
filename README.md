@@ -15,8 +15,8 @@
 | ไฟล์ | เนื้อหา | อ่านเมื่อ |
 |---|---|---|
 | [🌐 เว็บ landing](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **หน้าหลัก** — เลือก Interactive / คู่มือเต็ม | จุดเริ่ม |
-| [`docs/html/interactive.html`](docs/html/interactive.html) | **Interactive** — flip cards, before/after toggle, distance bars | อยากดูแบบเล่นได้ |
-| [`docs/html/manual.html`](docs/html/manual.html) · [`wren_manual.md`](docs/wren_manual.md) | **คู่มือเดียวจบ** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + ตัวอย่างจริง (html มี sidebar TOC) | อยากได้ครบที่เดียว / เอาไปสอนต่อ |
+| [`docs/html/interactive.html`](docs/html/interactive.html) | **Interactive (concept)** — Wren คืออะไร, 5 กับดัก, สถาปัตยกรรม, memory · flip cards, before/after toggle | อยากเข้าใจภาพ / สอนหน้าเวที |
+| [`docs/html/manual.html`](docs/html/manual.html) · [`wren_manual.md`](docs/wren_manual.md) | **คู่มือ (how-to)** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + cheat-sheet คำสั่งจริง | ลงมือทำ / อ้างอิงคำสั่ง |
 | [`docs/wren_concept.md`](docs/wren_concept.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
 | [`docs/wren_playbook.md`](docs/wren_playbook.md) | เล่นกับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
 | [`docs/wren_recipe.md`](docs/wren_recipe.md) | recipe คำถามใหม่ — เพิ่มไฟล์ไหน รันอะไร ทางลัด | เจอคำถามใหม่ |
