@@ -205,11 +205,12 @@ wren memory status                       # สถิติ index
 ```bash
 wren memory recall -q "สินค้าขายดี" -l 3
 ```
-```
-dist 0      สินค้าขายดี top 5 ตามจำนวน   ← ตรงเป๊ะ (0 = เหมือนเป๊ะ)
-dist 0.506  revenue รายสินค้า top 5      ← ใกล้เคียง
-dist 0.712  สินค้าที่ยังขายอยู่มีกี่ตัว   ← ห่างขึ้น
-```
+| dist | คู่ที่ recall เจอ | ระยะ |
+|---|---|---|
+| <span style="color:#247a4d"><b>0</b></span> | สินค้าขายดี top 5 ตามจำนวน | ตรงเป๊ะ (0 = เหมือนเป๊ะ) |
+| <span style="color:#b06a00"><b>0.506</b></span> | revenue รายสินค้า top 5 | ใกล้เคียง |
+| <span style="color:#cf3b25"><b>0.712</b></span> | สินค้าที่ยังขายอยู่มีกี่ตัว | ห่างขึ้น |
+
 > distance ยิ่งต่ำยิ่งใกล้ · `-l` = จำนวนผล · `-o json` เอาไปต่อ jq ได้
 
 ### 5.3 store vs load vs queries.yml — which to use
