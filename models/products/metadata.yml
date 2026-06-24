@@ -1,0 +1,32 @@
+name: products
+properties:
+  description: "Products"
+table_reference:
+  catalog: ""
+  schema: public
+  table: products
+primary_key: product_id
+columns:
+  - name: product_id
+    type: INT
+    not_null: true
+
+  - name: name
+    type: TEXT
+    not_null: true
+
+  - name: category_code
+    type: INT
+    not_null: true
+
+  - name: price
+    type: DECIMAL
+    not_null: true
+
+  - name: is_active
+    type: BOOLEAN
+    not_null: true
+
+  - name: created_at
+    type: TIMESTAMP
+    not_null: true

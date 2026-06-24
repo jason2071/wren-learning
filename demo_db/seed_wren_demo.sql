@@ -1,14 +1,18 @@
 -- ============================================================
 -- WrenAI Demo Seed (PostgreSQL)
--- จงใจใส่ "กับดัก" 4 อย่างที่ทำให้ LLM เขียน SQL ผิดแบบเงียบ ๆ:
+-- จงใจใส่ "กับดัก" 5 อย่างที่ทำให้ LLM เขียน SQL ผิดแบบเงียบ ๆ:
 --   1) มีตาราง customer ซ้ำ: customers_v1 (ตายแล้ว) กับ customers_v2 (ใช้จริง)
 --   2) orders.status เป็นตัวเลข ไม่มีคำอธิบาย
 --   3) customers_v2 มีคอลัมน์ลับ: email, phone, national_id
 --   4) มีทั้ง created_at และ paid_at -> นิยาม "active" ต้องใช้ตัวที่ถูก
+--   5) products.price (list ปัจจุบัน) vs order_items.unit_price (ราคาตอนขายจริง)
+--      + category_code เลขเปล่า + is_active (discontinued)
 --
 -- รันด้วย: psql "<conn-string>" -f seed_wren_demo.sql
 -- ============================================================
 
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS customers_v2;
 DROP TABLE IF EXISTS customers_v1;
@@ -41,6 +45,30 @@ CREATE TABLE orders (
     total       NUMERIC(10,2) NOT NULL,
     created_at  TIMESTAMP NOT NULL,   -- วันสร้าง order
     paid_at     TIMESTAMP             -- วันจ่ายจริง (null ถ้ายังไม่จ่าย)
+);
+
+-- ---------- products: category เป็นเลข + ราคา list ปัจจุบัน ----------
+-- กับดักที่ 5: products.price คือราคา list "ตอนนี้" (ขยับขึ้นเรื่อย ๆ)
+--   ห้ามใช้คำนวณ revenue ย้อนหลัง -> ต้องใช้ order_items.unit_price (ราคาตอนขายจริง)
+-- category_code เป็นเลข 1..5: 1=Electronics 2=Apparel 3=Food 4=Books 5=Home
+-- is_active=false = เลิกขายแล้ว แต่ยังมีใน order เก่า
+CREATE TABLE products (
+    product_id    INTEGER PRIMARY KEY,
+    name          TEXT NOT NULL,
+    category_code INTEGER NOT NULL,
+    price         NUMERIC(10,2) NOT NULL,   -- ราคา list ปัจจุบัน (drift; ไม่ใช่ราคาขายจริงย้อนหลัง)
+    is_active     BOOLEAN NOT NULL,         -- false = discontinued
+    created_at    TIMESTAMP NOT NULL
+);
+
+-- ---------- order_items: line item ต่อ 1 order ----------
+-- unit_price = ราคา "ตอนขายจริง" -> source of truth ของ revenue รายสินค้า
+CREATE TABLE order_items (
+    item_id    INTEGER PRIMARY KEY,
+    order_id   INTEGER NOT NULL REFERENCES orders(order_id),
+    product_id INTEGER NOT NULL REFERENCES products(product_id),
+    quantity   INTEGER NOT NULL,
+    unit_price NUMERIC(10,2) NOT NULL       -- ราคาตอนขาย (มัก < products.price ปัจจุบัน)
 );
 
 -- ============================================================
@@ -89,6 +117,27 @@ SELECT
     END
 FROM generate_series(1, 1200) AS g;
 
+-- 40 products (ราคา list ปัจจุบัน = base * 1.15; ~11% discontinued)
+INSERT INTO products (product_id, name, category_code, price, is_active, created_at)
+SELECT
+    g,
+    (ARRAY['Widget','Gadget','Gizmo','Doohickey','Thingamajig'])[1 + (g % 5)] || ' ' || g,
+    1 + (g % 5),                                     -- category 1..5
+    round(((100 + (g % 20) * 25) * 1.15)::numeric, 2),  -- list price "ตอนนี้" (สูงกว่าตอนขายจริง)
+    (g % 9) <> 0,                                    -- ทุก ๆ ตัวที่ 9 = discontinued
+    now() - ((g % 500) || ' days')::interval
+FROM generate_series(1, 40) AS g;
+
+-- 3000 order items: unit_price = ราคา base (ตอนขายจริง) < products.price ปัจจุบัน
+INSERT INTO order_items (item_id, order_id, product_id, quantity, unit_price)
+SELECT
+    g,
+    1 + (g % 1200),                                  -- กระจายลง 1200 orders
+    1 + (g * 13) % 40,                               -- กระจายไป 40 products
+    1 + (g % 3),                                     -- qty 1..3
+    (100 + ((1 + (g * 13) % 40) % 20) * 25)::numeric -- ราคา base ตอนขาย (ไม่บวก 15%)
+FROM generate_series(1, 3000) AS g;
+
 -- ============================================================
 -- ตรวจผล: รัน 2 query นี้เทียบกัน = หัวใจของ demo
 -- ============================================================
@@ -105,3 +154,18 @@ SELECT 'CORRECT (with context)' AS label, COUNT(DISTINCT customer_id) AS active_
 FROM orders
 WHERE status = 2
     AND paid_at >= now() - interval '90 days';
+
+-- ------------------------------------------------------------
+-- กับดักที่ 5: revenue รายสินค้า — ใช้ราคาผิดคอลัมน์
+-- ------------------------------------------------------------
+
+-- ❌ ใช้ products.price (list ปัจจุบัน) + ไม่กรอง status -> สูงเกินจริง ~15%+
+SELECT 'WRONG (list price)' AS label, round(SUM(oi.quantity * p.price), 2) AS revenue
+FROM order_items oi
+JOIN products p ON p.product_id = oi.product_id;
+
+-- ✅ ใช้ order_items.unit_price (ราคาตอนขายจริง) + เฉพาะ order ที่ paid
+SELECT 'CORRECT (sale price, paid only)' AS label, round(SUM(oi.quantity * oi.unit_price), 2) AS revenue
+FROM order_items oi
+JOIN orders o ON o.order_id = oi.order_id
+WHERE o.status = 2;

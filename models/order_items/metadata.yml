@@ -1,0 +1,28 @@
+name: order_items
+properties:
+  description: "Order Item"
+table_reference:
+  catalog: ""
+  schema: public
+  table: order_items
+primary_key: item_id
+columns:
+  - name: item_id
+    type: INT
+    not_null: true
+
+  - name: order_id
+    type: INT
+    not_null: true
+
+  - name: product_id
+    type: INT
+    not_null: true
+
+  - name: quantity
+    type: INT
+    not_null: true
+
+  - name: unit_price
+    type: DECIMAL
+    not_null: true
