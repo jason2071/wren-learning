@@ -92,10 +92,10 @@ psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DATABASE" -f demo_db/seed
 
 ท้ายไฟล์ `seed_wren_demo.sql` มี query เทียบให้ — รันแล้วควรได้เลขนี้:
 
-```
-active customers:   WRONG (v1, created_at) = 195   ·   CORRECT (v2, status=2, paid_at) = 57
-revenue รายสินค้า:  WRONG (products.price) = 2,328,750   ·   CORRECT (unit_price, status=2) = 570,000
-```
+| คำถาม | ❌ raw SQL (ผิด) | ✅ Wren (ถูก) |
+|---|---|---|
+| active customers (90 วัน) | **195** · v1, created_at | **57** · v2, status=2, paid_at |
+| revenue รายสินค้า | **2,328,750** · products.price | **570,000** · unit_price, status=2 |
 
 > ได้เลขไม่ตรง = seed เพี้ยน (รัน seed ซ้ำ). เลขพวกนี้ deterministic เสมอ
 
