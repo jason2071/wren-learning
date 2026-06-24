@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WrenAI — คู่มือเข้าใจง่าย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#f6f7f9; --ink2:#eef1f5; --panel:#ffffff; --panel2:#eef1f5;
+  --line:#e4e8ee; --line2:#cdd4df;
+  --fg:#1b1f29; --mut:#586173; --dim:#8b94a6;
+  --amber:#b3730c; --amber-soft:#b3730c16;
+  --cyan:#0c8395; --cyan-soft:#0c839518;
+  --red:#cf3b25; --red-soft:#cf3b2516;
+  --green:#247a4d; --green-soft:#247a4d16;
+  --violet:#5b4fc4;
+  --serif:'Fraunces',Georgia,serif;
+  --thai:'IBM Plex Sans Thai',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --rad:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{
+  background:var(--ink); color:var(--fg);
+  font-family:var(--thai); font-weight:400; line-height:1.7;
+  font-size:16.5px; letter-spacing:.1px;
+  overflow-x:hidden;
+}
+/* atmosphere */
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(900px 500px at 12% -5%, #e7eefb 0%, transparent 55%),
+    radial-gradient(800px 600px at 95% 10%, #f7ecf1 0%, transparent 50%),
+    radial-gradient(700px 700px at 70% 100%, #e6f1f2 0%, transparent 55%),
+    var(--ink);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; opacity:.02; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:100;
+  background:linear-gradient(90deg,var(--amber),var(--cyan));box-shadow:0 0 12px var(--amber)}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;
+  display:grid;grid-template-columns:218px 1fr;gap:54px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;gap:0}}
+
+/* nav */
+nav{position:sticky;top:0;align-self:start;height:100vh;padding:46px 0 30px;
+  display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+#navtoggle{display:none}
+@media(max-width:900px){
+  #navtoggle{display:flex;position:fixed;top:13px;right:14px;z-index:101;width:44px;height:44px;
+    align-items:center;justify-content:center;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--amber);font-size:20px;cursor:pointer}
+  nav{display:flex;position:fixed;inset:0;height:100vh;width:100%;z-index:100;
+    background:#fffffff2;backdrop-filter:blur(8px);padding:66px 26px 30px;
+    transform:translateY(-100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);opacity:0}
+  nav.open{transform:none;opacity:1}
+}
+.brand{font-family:var(--serif);font-weight:900;font-size:23px;letter-spacing:-.5px;
+  margin-bottom:6px;line-height:1.1}
+.brand i{font-style:italic;color:var(--amber);font-weight:500}
+.brand small{display:block;font-family:var(--thai);font-weight:400;font-size:12px;
+  color:var(--dim);letter-spacing:.4px;margin-top:5px}
+nav a{color:var(--mut);text-decoration:none;font-size:13.5px;padding:7px 13px;
+  border-radius:9px;border-left:2px solid transparent;transition:.2s;display:flex;gap:9px;align-items:baseline}
+nav a .nn{font-family:var(--mono);font-size:11px;color:var(--dim)}
+nav a:hover{color:var(--fg);background:#00000006}
+nav a.on{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+nav a.on .nn{color:var(--amber)}
+
+/* mode switcher (Interactive ↔ คู่มือเต็ม) */
+.modes{display:flex;gap:4px;background:var(--ink2);border:1px solid var(--line);
+  border-radius:11px;padding:4px;margin:12px 0 10px}
+.modes a{flex:1;text-align:center;font-family:var(--thai);font-size:12px;font-weight:500;
+  padding:7px 6px;border-radius:8px;text-decoration:none;color:var(--mut);transition:.2s;
+  border-left:none;display:block}
+.modes a.on{background:var(--panel);color:var(--amber);font-weight:600;box-shadow:0 1px 3px #1b1f2914}
+.modes a:hover:not(.on){color:var(--fg);background:#00000006}
+
+/* hero CTA → คู่มือเต็ม */
+.btn-manual{display:inline-flex;align-items:center;gap:9px;margin-top:32px;
+  font-family:var(--thai);font-size:14.5px;font-weight:600;color:var(--amber);text-decoration:none;
+  border:1px solid var(--amber);background:var(--amber-soft);padding:11px 20px;border-radius:11px;
+  transition:.25s;width:fit-content}
+.btn-manual:hover{background:var(--amber);color:#fff;transform:translateX(3px)}
+.btn-manual .ar{transition:.25s}.btn-manual:hover .ar{transform:translateX(3px)}
+
+main{padding:46px 0 120px;min-width:0}
+section{margin-bottom:78px;scroll-margin-top:70px}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--amber);display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.kicker::before{content:"";width:26px;height:1.5px;background:var(--amber)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(40px,6.5vw,76px);
+  line-height:.98;letter-spacing:-1.5px;margin-bottom:20px}
+h1 .hl{color:var(--amber);font-style:italic;font-weight:500}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,40px);
+  line-height:1.08;letter-spacing:-.5px;margin-bottom:18px}
+h3{font-family:var(--thai);font-weight:600;font-size:20px;margin:26px 0 12px;color:var(--fg)}
+p{color:var(--mut);margin-bottom:14px;max-width:62ch}
+strong{color:var(--fg);font-weight:600}
+em{color:var(--cyan);font-style:normal;font-weight:500}
+code{font-family:var(--mono);font-size:.86em;background:#eef1f6;color:#0a6f7e;
+  padding:1.5px 6px;border-radius:5px;border:1px solid var(--line)}
+.lead{font-size:20px;line-height:1.65;color:var(--fg);max-width:56ch;font-weight:300}
+
+/* hero */
+.hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center;
+  padding-top:30px;margin-bottom:40px}
+.reveal{opacity:0;transform:translateY(22px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.d1{animation-delay:.05s}.d2{animation-delay:.18s}.d3{animation-delay:.32s}.d4{animation-delay:.46s}.d5{animation-delay:.6s}
+
+/* flow diagram (hero) */
+.flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:38px;
+  font-family:var(--mono);font-size:13px}
+.node{padding:14px 18px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);position:relative;transition:.3s}
+.node b{display:block;font-family:var(--thai);font-weight:600;font-size:14.5px;color:var(--fg)}
+.node span{color:var(--dim);font-size:11.5px}
+.node.wren{border-color:var(--amber);background:linear-gradient(135deg,#fbf3e1,var(--panel));
+  box-shadow:0 0 0 1px var(--amber-soft),0 14px 40px -20px #b3730c66}
+.node.wren b{color:var(--amber)}
+.arrow{color:var(--line2);font-size:20px;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4;transform:translateX(0)}50%{opacity:1;transform:translateX(4px)}}
+
+/* card grid */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);
+  padding:22px;transition:.3s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--line2);transform:translateY(-3px);
+  box-shadow:0 18px 44px -24px #1b1f2933}
+.card .ic{font-size:24px;margin-bottom:10px;display:block}
+.card h4{font-family:var(--thai);font-weight:600;font-size:16.5px;margin-bottom:7px;color:var(--fg)}
+.card p{font-size:13.5px;margin:0;color:var(--mut)}
+.card .tag{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:11px;color:var(--dim)}
+
+/* trap card flip */
+.trap{cursor:pointer;perspective:1000px;height:172px;background:none;border:none;padding:0}
+.trap-in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.trap.flip .trap-in{transform:rotateY(180deg)}
+.trap-f,.trap-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rad);
+  padding:20px;border:1px solid var(--line);display:flex;flex-direction:column}
+.trap-f{background:var(--panel)}
+.trap-b{background:linear-gradient(150deg,#e8f5ee,var(--panel));transform:rotateY(180deg);border-color:var(--green)}
+.trap .num{font-family:var(--serif);font-weight:900;font-size:30px;color:var(--red);line-height:1}
+.trap-f h4{font-weight:600;font-size:15.5px;margin:10px 0 6px;color:var(--fg)}
+.trap-f p{font-size:12.5px;color:var(--mut);margin:0}
+.trap-b .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:8px}
+.trap-b h4{font-weight:600;font-size:15px;color:var(--green);margin-bottom:6px}
+.trap-b p{font-size:12.5px;color:var(--mut);margin:0}
+.trap .hint{position:absolute;bottom:13px;right:15px;font-family:var(--mono);font-size:10px;color:var(--dim)}
+
+/* before/after comparison */
+.cmp{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:0;overflow:hidden}
+.cmp-head{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:14px}
+.cmp-q{font-weight:600;font-size:17px;color:var(--fg)}
+.cmp-q span{font-family:var(--mono);font-size:11.5px;color:var(--amber);
+  background:var(--amber-soft);padding:3px 9px;border-radius:6px;margin-left:9px}
+/* toggle */
+.toggle{display:flex;background:var(--ink2);border:1px solid var(--line);border-radius:11px;padding:4px;gap:3px;
+  font-family:var(--mono);font-size:12px;flex-shrink:0}
+.toggle button{border:none;background:none;color:var(--mut);padding:7px 15px;border-radius:8px;
+  cursor:pointer;font-family:var(--mono);font-size:12px;transition:.25s;font-weight:500}
+.toggle button.raw.on{background:var(--red-soft);color:var(--red)}
+.toggle button.wren.on{background:var(--green-soft);color:var(--green)}
+.cmp-body{padding:26px 22px;display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center}
+@media(max-width:680px){.cmp-body{grid-template-columns:1fr}}
+.cmp-sql{font-family:var(--mono);font-size:13px;background:var(--ink);border:1px solid var(--line);
+  border-radius:11px;padding:16px;color:var(--mut);line-height:1.6;transition:.3s;min-height:84px;
+  display:flex;align-items:center;word-break:break-word}
+.cmp-sql.raw{border-color:#f0c4ba;background:#fdf1ee;color:#b3402a}
+.cmp-sql.wren{border-color:#bbe1cc;background:#eef8f2;color:#1f6b45}
+.cmp-res{text-align:center}
+.cmp-res .big{font-family:var(--serif);font-weight:900;font-size:clamp(46px,8vw,68px);line-height:1;
+  transition:color .3s}
+.cmp-res .big.raw{color:var(--red)}.cmp-res .big.wren{color:var(--green)}
+.cmp-res .note{font-size:13px;color:var(--mut);margin-top:10px;min-height:20px}
+.cmp-foot{padding:13px 22px;border-top:1px solid var(--line);font-size:13px;color:var(--dim);
+  background:var(--ink2)}
+.cmp-foot b{color:var(--amber)}
+
+/* memory commands */
+.mcmd{display:flex;gap:16px;align-items:flex-start;padding:18px;border-radius:var(--rad);
+  border:1px solid var(--line);background:var(--panel);transition:.3s}
+.mcmd:hover{border-color:var(--cyan);background:var(--panel2)}
+.mcmd .mc{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--cyan);
+  background:var(--cyan-soft);padding:6px 12px;border-radius:8px;flex-shrink:0;white-space:nowrap}
+.mcmd h4{font-weight:600;font-size:15px;margin-bottom:3px;color:var(--fg)}
+.mcmd p{font-size:13px;margin:0}
+
+/* distance interactive */
+.dist{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;margin-top:6px}
+.dist .qline{font-family:var(--mono);font-size:13.5px;color:var(--mut);margin-bottom:20px}
+.dist .qline b{color:var(--amber)}
+.drow{display:grid;grid-template-columns:54px 1fr;gap:16px;align-items:center;margin-bottom:14px;
+  cursor:default}
+.drow .dv{font-family:var(--mono);font-weight:700;font-size:15px;text-align:right}
+.dbar-wrap{background:var(--ink);border:1px solid var(--line);border-radius:9px;overflow:hidden;position:relative}
+.dbar{padding:11px 14px;position:relative;z-index:1}
+.dbar .nl{font-weight:600;font-size:14px;color:var(--fg)}
+.dbar .sq{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:2px}
+.dfill{position:absolute;inset:0;z-index:0;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.near .dfill{background:linear-gradient(90deg,var(--green-soft),transparent)}
+.near .dv{color:var(--green)}
+.mid .dfill{background:linear-gradient(90deg,var(--amber-soft),transparent)}
+.mid .dv{color:var(--amber)}
+.far .dfill{background:linear-gradient(90deg,var(--red-soft),transparent)}
+.far .dv{color:var(--red)}
+.dist .verdict{margin-top:18px;padding:14px 16px;border-radius:11px;background:var(--ink2);
+  border:1px solid var(--line);font-size:13.5px;color:var(--mut)}
+.dist .verdict b{color:var(--fg)}
+
+/* loop diagram */
+.loop{display:flex;flex-wrap:wrap;gap:0;align-items:stretch;margin-top:8px;
+  border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel)}
+.lstep{flex:1;min-width:150px;padding:24px 20px;border-right:1px solid var(--line);position:relative;transition:.3s}
+.lstep:last-child{border-right:none}
+.lstep:hover{background:var(--panel2)}
+.lstep .ls-n{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px}
+.lstep .ls-c{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--amber);margin:6px 0 8px}
+.lstep p{font-size:13px;margin:0;color:var(--mut)}
+.lstep::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);
+  color:var(--amber);font-size:18px;z-index:2;background:var(--panel);padding:2px}
+.lstep:last-child::after{content:"↺";right:auto;left:50%;bottom:-2px;top:auto;
+  transform:translateX(-50%);color:var(--cyan)}
+@media(max-width:680px){.lstep{border-right:none;border-bottom:1px solid var(--line)}.lstep::after{display:none}}
+
+/* code block */
+.code{background:#070910;border:1px solid var(--line);border-radius:12px;margin:16px 0;
+  position:relative;overflow:hidden}
+.code-h{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);
+  background:#0c0f17}
+.dot{width:11px;height:11px;border-radius:50%}.dot.r{background:#e8604c}.dot.y{background:#f0a738}.dot.g{background:#5cc08a}
+.code-h .ct{margin-left:8px;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+.code-h .cp{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--mut);
+  cursor:pointer;border:1px solid var(--line);padding:4px 11px;border-radius:7px;transition:.2s}
+.code-h .cp:hover{color:var(--amber);border-color:var(--amber)}
+.code pre{padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.65}
+.code pre code{background:none;border:none;padding:0;color:#c4cbdb;font-size:13px}
+.tok-c{color:#5f6b85}.tok-k{color:var(--violet)}.tok-s{color:var(--green)}.tok-f{color:var(--cyan)}.tok-o{color:var(--amber)}
+
+/* workflow stepper */
+.steps{counter-reset:s;margin-top:8px}
+.step{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.step:last-child{border:none}
+.step .si{counter-increment:s;flex-shrink:0;width:34px;height:34px;border-radius:10px;
+  border:1px solid var(--line);display:grid;place-items:center;font-family:var(--serif);
+  font-weight:900;font-size:16px;color:var(--amber);background:var(--amber-soft)}
+.step .si::before{content:counter(s)}
+.step .sc{flex:1}
+.step .sc b{font-size:15.5px;color:var(--fg);font-weight:600}
+.step .sc code{font-size:12.5px}
+.step .sc p{font-size:13px;margin:3px 0 0;color:var(--dim)}
+
+/* cli table */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--dim);padding:13px 16px;background:var(--ink2);border-bottom:1px solid var(--line);font-weight:500}
+.tbl td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--mut);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#00000004}
+.tbl td code{font-size:12.5px;white-space:nowrap}
+
+/* callout */
+.note{border-left:3px solid var(--cyan);background:var(--cyan-soft);padding:14px 18px;
+  border-radius:0 10px 10px 0;margin:18px 0;font-size:14px;color:var(--mut)}
+.note.warn{border-color:var(--amber);background:var(--amber-soft)}
+.note b{color:var(--fg)}
+
+footer{border-top:1px solid var(--line);padding:36px 0;margin-top:30px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--dim)}
+footer a{color:var(--amber);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+.in{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.in.vis{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<button id="navtoggle" aria-label="เมนู" aria-expanded="false">☰</button>
+
+<div class="wrap">
+<nav>
+  <a class="brand" href="../index.html" style="text-decoration:none;color:inherit;display:block">Wren<i>AI</i><small>คู่มือเข้าใจง่าย · ↩ หน้าหลัก</small></a>
+  <div class="modes">
+    <a class="on" href="interactive.html">✦ Interactive</a>
+    <a href="manual.html">📖 คู่มือเต็ม</a>
+  </div>
+  <a href="#what"><span class="nn">01</span> Wren คืออะไร</a>
+  <a href="#traps"><span class="nn">02</span> 5 กับดัก</a>
+  <a href="#compare"><span class="nn">03</span> มี vs ไม่มี</a>
+  <a href="#parts"><span class="nn">04</span> องค์ประกอบ</a>
+  <a href="#memory"><span class="nn">05</span> Memory</a>
+  <a href="#distance"><span class="nn">06</span> อ่าน distance</a>
+  <a href="#loop"><span class="nn">07</span> วงจรฉลาดขึ้น</a>
+  <a href="#flow"><span class="nn">08</span> Workflow</a>
+  <a href="#recipe"><span class="nn">09</span> คำถามใหม่</a>
+  <a href="#cli"><span class="nn">10</span> CLI cheat-sheet</a>
+</nav>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="what">
+    <div class="kicker reveal d1">Semantic SQL Layer · PostgreSQL</div>
+    <h1 class="reveal d2">Ask in plain words.<br><span class="hl">Get correct SQL.</span></h1>
+    <p class="lead reveal d3">Wren อยู่ระหว่าง <strong>คน/AI</strong> กับ <strong>ฐานข้อมูลจริง</strong> — ถามด้วยภาษาคนหรือชื่อง่ายๆ แล้ว Wren เติมบริบท (ตารางจริง, join, กติกาธุรกิจ) ก่อนส่งลง DB. ไม่ใช่ DB ใหม่ ไม่เก็บข้อมูลซ้ำ — เป็น "ชั้นความรู้" ครอบของเดิม</p>
+    <div class="flow reveal d4">
+      <div class="node"><b>คน / AI</b><span>ถามภาษาคน</span></div>
+      <div class="arrow">→</div>
+      <div class="node wren"><b>Wren layer</b><span>รู้ชื่อจริง · join · นิยาม</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>PostgreSQL</b><span>SQL ที่ถูก</span></div>
+    </div>
+    <a class="btn-manual reveal d5" href="manual.html">📖 อ่านคู่มือฉบับเต็ม — ติดตั้ง · เพิ่มตาราง · troubleshoot <span class="ar">→</span></a>
+  </section>
+
+  <!-- TRAPS -->
+  <section id="traps">
+    <div class="kicker">02 — ปัญหา</div>
+    <h2>5 กับดักของฐานข้อมูลจริง</h2>
+    <p>DB จริงมักรก: ความรู้กระจุกในหัวคนเก่า. คนใหม่/AI ที่ไม่รู้บริบท → เขียน SQL ผิดแบบ <em>เงียบๆ</em> (ได้เลข แต่ผิด). <strong>คลิกการ์ดเพื่อพลิกดูวิธี Wren แก้</strong></p>
+    <div class="grid g3" style="margin-top:22px">
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">v1≠v2</div><h4>ตารางตายปนใช้งาน</h4><p>customers_v1 (ตาย) ปน v2 — LLM นับ/join ผิดตาราง</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>alias model + ลบ v1</h4><p>model <code>customers</code> ชี้ไป <code>customers_v2</code> เสมอ · v1 หายไป</p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">2=?</div><h4>status เป็นเลขเปล่า</h4><p>ไม่รู้ว่า 2 = paid → กรองผิด นับรวม refund</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>เขียนนิยาม "revenue = status 2" ให้คน+AI อ่านตรงกัน</p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">🔒</div><h4>คอลัมน์ลับ</h4><p>national_id ปนข้อมูลทั่วไป — SELECT เห็นหมด รั่ว</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>masking</h4><p>ไม่ประกาศ column = มองไม่เห็น. ใน demo: national_id ลบแล้ว · email/phone เป็น exercise ให้ลบเอง</p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">⏱</div><h4>เวลาหลายตัว</h4><p>created_at vs paid_at — กรองผิดตัว เลขเพี้ยน</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "ใช้ paid_at กรองเวลาจ่าย ไม่ใช่ created_at"</p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num">฿≠฿</div><h4>ราคา list ≠ ราคาขายจริง</h4><p>products.price = list ปัจจุบัน (สูงกว่า ~15%) — คิด revenue รายสินค้าผิด เป่ายอด</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">Wren แก้</div><h4>instructions.md</h4><p>นิยาม "revenue รายสินค้า = <code>order_items.unit_price × quantity</code> + กรอง status=2" ห้ามใช้ <code>products.price</code></p></div>
+      </div></button>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare">
+    <div class="kicker">03 — เทียบ</div>
+    <h2>คำถามเดียวกัน เลขคนละเรื่อง</h2>
+    <p>กดสลับ <em>raw SQL</em> ↔ <em>Wren</em> ดูว่าเลขเปลี่ยนยังไง (เลขจริงจาก demo seed: 200 ลูกค้า / 1200 orders / 40 products / 3000 order_items)</p>
+    <div class="grid" style="gap:20px;margin-top:22px" id="cmpHost"></div>
+  </section>
+
+  <!-- PARTS -->
+  <section id="parts">
+    <div class="kicker">04 — องค์ประกอบ</div>
+    <h2>5 ชิ้นที่ทำงานร่วมกัน</h2>
+    <p>บริบทที่เคยอยู่ในหัวคน ถูกย้ายมาเป็นไฟล์ config ที่ทั้งคนและ AI อ่านได้</p>
+    <div class="grid g2" style="margin-top:22px">
+      <div class="card"><span class="ic">📖</span><span class="tag">models/</span><h4>พจนานุกรมชื่อ</h4><p><code>name</code> = ชื่อที่ถาม · <code>table_reference</code> = ตารางจริง · <code>columns</code> ที่ประกาศเท่านั้นที่เห็น (ไม่ประกาศ = masked)</p></div>
+      <div class="card"><span class="ic">🔗</span><span class="tag">relationships.yml</span><h4>แผนที่ join</h4><p>บอกว่าตารางต่อกันยังไง (orders → customers · order_items → products MANY_TO_ONE) → ถามข้ามตารางได้ AI ไม่ join มั่ว</p></div>
+      <div class="card"><span class="ic">📜</span><span class="tag">instructions.md</span><h4>กติกาธุรกิจภาษาคน</h4><p>นิยามที่ SQL บอกไม่ได้: active คืออะไร, revenue นับยังไง, status เลขไหนแปลว่าอะไร</p></div>
+      <div class="card"><span class="ic">📝</span><span class="tag">queries.yml</span><h4>คู่ คำถาม↔SQL ที่ curate</h4><p>ตัวอย่างที่เขียนเอง (git-tracked) — โหลดเข้า memory ด้วย <code>memory load</code> เพื่อให้ recall แม่นกับคำถามซ้ำๆ</p></div>
+      <div class="card"><span class="ic">🧠</span><span class="tag">.wren/memory/</span><h4>ความจำ</h4><p>เก็บ context + คู่ "คำถาม↔SQL" เป็น vector — ค้นด้วยความหมาย ไม่ใช่ตรงตัวอักษร (generated)</p></div>
+    </div>
+  </section>
+
+  <!-- MEMORY -->
+  <section id="memory">
+    <div class="kicker">05 — Memory</div>
+    <h2>Memory — สมุดโน้ตอัจฉริยะ</h2>
+    <p>หัวใจที่ทำให้ Wren <em>ยิ่งใช้ยิ่งฉลาด</em> — คำสั่งหลัก</p>
+    <div class="grid" style="gap:13px;margin-top:22px">
+      <div class="mcmd"><span class="mc">fetch</span><div><h4>เปิดสมุดดูบริบทที่เกี่ยวข้อง</h4><p>ดึง context (schema + นิยาม) ที่เกี่ยวกับคำถาม ให้ AI ใช้ก่อนเขียน SQL</p></div></div>
+      <div class="mcmd"><span class="mc">recall</span><div><h4>เคยมีคนถามแบบนี้ไหม</h4><p>หาคู่ "คำถาม↔SQL" เก่าที่ความหมายใกล้คำถาม (few-shot ให้ AI)</p></div></div>
+      <div class="mcmd"><span class="mc">store</span><div><h4>จดคำตอบที่ถูกไว้</h4><p>บันทึกคู่ "คำถาม↔SQL" ใหม่ ให้ครั้งหน้า recall เจอ</p></div></div>
+      <div class="mcmd"><span class="mc">load</span><div><h4>โหลด queries.yml เข้า store</h4><p>import คู่ที่ curate ไว้ (git-tracked) → <code>wren memory load queries.yml</code></p></div></div>
+    </div>
+    <div class="note warn"><b>load ≠ index:</b> <code>wren memory index</code> สร้างแค่ <em>auto browse queries</em> (List all X) + index schema — <b>ไม่ดึงคู่จาก queries.yml เข้า recall</b>. คู่ที่เขียนเองเข้า store ด้วย <code>wren memory load queries.yml</code> เท่านั้น · <code>memory dump</code> = ทิศกลับ เขียนทับ queries.yml</div>
+    <div class="note">subcommands ทั้งหมด (ตรวจกับ CLI แล้ว): <code>index · fetch · store · recall · load · dump · list · forget · reset · status</code></div>
+  </section>
+
+  <!-- DISTANCE -->
+  <section id="distance">
+    <div class="kicker">06 — อ่านผล</div>
+    <h2>distance: ยิ่งต่ำ ยิ่งใกล้</h2>
+    <p>recall เรียงผลตามระยะห่างความหมาย. <strong>คล้าย ≠ ถูก</strong> — ต้องดู distance แล้วตรวจ SQL เอง</p>
+    <div class="dist" id="distDemo">
+      <div class="qline">$ wren memory recall -q <b>"สมัครวันนี้กี่คน"</b></div>
+      <div class="drow near"><div class="dv">0.735</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">ลูกค้ามีกี่คน</div><div class="sq">SELECT COUNT(*) FROM customers</div></div></div></div>
+      <div class="drow mid"><div class="dv">1.367</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">List all customers</div><div class="sq">SELECT * FROM customers LIMIT 100</div></div></div></div>
+      <div class="drow far"><div class="dv">1.398</div><div class="dbar-wrap"><div class="dfill"></div><div class="dbar"><div class="nl">Total customer_id in orders</div><div class="sq">SELECT SUM(customer_id) FROM orders</div></div></div></div>
+      <div class="verdict">⚠️ ใกล้สุด 0.735 = <b>"ลูกค้ามีกี่คน"</b> แต่นั่นคือนับ<b>ทั้งหมด</b> ไม่ใช่<b>วันนี้</b> — ระยะ 0.7+ ยังถือว่าห่าง (ตรงจริงจะ ~0.1–0.3). ไม่มีของตรง → เขียนเอง แล้ว <code>store</code> ไว้</div>
+    </div>
+  </section>
+
+  <!-- LOOP -->
+  <section id="loop">
+    <div class="kicker">07 — วงจร</div>
+    <h2>recall → write → store</h2>
+    <p>ครั้งแรกอาจไม่มีอะไรให้ recall → สอนมันด้วย <code>store</code>. ใช้ไปเรื่อยๆ คลังโต → recall แม่นขึ้น → AI ผิดน้อยลง</p>
+    <div class="loop">
+      <div class="lstep"><div class="ls-n">STEP 1</div><div class="ls-c">recall</div><p>หาของเก่าที่คล้าย — เจอ dist สูง = ยังไม่มีของตรง</p></div>
+      <div class="lstep"><div class="ls-n">STEP 2</div><div class="ls-c">write + run</div><p>เขียน SQL เอง รันจริง ตรวจเลขให้ถูก</p></div>
+      <div class="lstep"><div class="ls-n">STEP 3</div><div class="ls-c">store</div><p>จดคู่ "คำถาม↔SQL" ที่ถูก — ครั้งหน้า recall เจอ dist ต่ำ</p></div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section id="flow">
+    <div class="kicker">08 — ตั้งต้น</div>
+    <h2>จาก folder เปล่า → ถามได้</h2>
+    <div class="steps">
+      <div class="step"><div class="si"></div><div class="sc"><b>ติดตั้ง + ต่อ DB</b> <code>wren profile add</code><p>ใส่ credential (host/port/user/pass)</p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>scaffold โครง</b> <code>wren context init</code><p>ได้โครงไฟล์เปล่า — แล้วลบ example ทิ้ง</p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>สร้าง models/ + relationships</b><p>เขียนเอง หรือให้ AI generate จาก schema</p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>ใส่กติกาธุรกิจ</b> <code>instructions.md</code><p>นิยาม active / revenue / status codes</p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>compile</b> <code>wren context build</code><p>ได้ <code>target/mdl.json</code></p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>index ความจำ</b> <code>wren memory index</code><p>index schema + instructions → ได้ <code>.wren/memory/</code></p></div></div>
+      <div class="step"><div class="si"></div><div class="sc"><b>โหลดคู่ที่ curate</b> <code>wren memory load queries.yml</code><p>เอาคู่ คำถาม↔SQL จาก <code>queries.yml</code> เข้า recall — ถามได้แล้ว</p></div></div>
+    </div>
+  </section>
+
+  <!-- RECIPE -->
+  <section id="recipe">
+    <div class="kicker">09 — ลงมือ</div>
+    <h2>เจอคำถามใหม่ ทำยังไง</h2>
+    <p>หลักตัดสิน 1 ประโยค: <strong>คำถามต้องใช้ field / join / นิยาม ที่ layer ยังไม่มีไหม?</strong> — มีครบ <em>ข้าม</em> เขียน SQL ได้เลย · ขาด <em>เพิ่ม</em> ที่ชั้นที่ขาดก่อน. <strong>คลิกการ์ดพลิกดูว่าต้องทำอะไร</strong></p>
+
+    <div class="grid g4" style="margin-top:22px">
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--green)">ข้าม</div><h4>field + join ครบ</h4><p>เช่น ลูกค้าซื้อเยอะสุด · order ยังไม่จ่าย · สมัครวันนี้</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b"><div class="lbl">ทำแค่</div><h4>เขียน SQL เลย</h4><p><code>wren --sql "..."</code> · อยากเก็บ → append <code>queries.yml</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--amber)">+col</div><h4>ขาด column</h4><p>DB มี field แต่ model ไม่ประกาศ (เช่น national_id ที่ mask)</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--amber)"><div class="lbl" style="color:var(--amber)">เพิ่มที่</div><h4>models/*/metadata.yml</h4><p>เพิ่ม column → <code>wren context build</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--cyan)">+join</div><h4>ขาด relationship</h4><p>ตารางใหม่ที่ยังไม่ผูก (เช่น order_items)</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--cyan)"><div class="lbl" style="color:var(--cyan)">เพิ่มที่</div><h4>relationships.yml</h4><p>เพิ่ม block join → <code>wren context build</code></p></div>
+      </div></button>
+      <button class="trap"><div class="trap-in">
+        <div class="trap-f"><div class="num" style="color:var(--violet)">+นิยาม</div><h4>ศัพท์ใหม่</h4><p>"VIP" / "churn" — field ครบ แต่ AI เดาความหมายไม่ได้</p><div class="hint">คลิกพลิก ↻</div></div>
+        <div class="trap-b" style="border-color:var(--violet)"><div class="lbl" style="color:var(--violet)">เพิ่มที่</div><h4>instructions.md</h4><p>นิยามศัพท์ → <code>build</code> + <code>memory index</code></p></div>
+      </div></button>
+    </div>
+
+    <h3>ทางลัด — ไม่ต้องรันทุกคำสั่ง</h3>
+    <p>เลือกตามความมั่นใจ. <em>recall / dry-plan</em> = เครื่องมือ debug ใช้ตอนไม่ชัวร์เท่านั้น ปกติข้าม</p>
+    <div class="loop" style="margin-bottom:18px">
+      <div class="lstep"><div class="ls-n">ระดับ 1 · เร็วสุด</div><div class="ls-c" style="color:var(--green)">1 คำสั่ง</div><p>แค่อยากได้คำตอบ · field มั่นใจครบ<br><code>wren --sql "..."</code></p></div>
+      <div class="lstep"><div class="ls-n">ระดับ 2 · เก็บไว้</div><div class="ls-c" style="color:var(--amber)">+ store</div><p>อยากใช้ซ้ำ<br><code>wren memory store --nl --sql</code></p></div>
+      <div class="lstep"><div class="ls-n">ระดับ 3 · ครบ</div><div class="ls-c" style="color:var(--cyan)">git track</div><p>append <code>queries.yml</code><br>→ <code>memory load queries.yml</code></p></div>
+    </div>
+    <div class="note warn"><b>ลำดับบังคับ:</b> <code>context build</code> ต้องก่อน <code>memory index</code> เสมอ (index อ่าน mdl.json) · เพิ่ม column/relationship → build ก่อนรัน SQL ที่ใช้ field ใหม่ · <code>store</code> เข้า memory ตรง ไม่ต้อง build</div>
+    <div class="note warn"><b>queries.yml → store ใช้ <code>memory load</code> ไม่ใช่ <code>memory index</code>:</b> <code>index</code> สร้างแค่ auto browse queries (List all X) — ไม่ดึงคู่ curate เข้า recall · <code>wren memory load queries.yml</code> (<code>--upsert</code> ถ้าแก้ SQL เดิม) · <code>memory dump</code> = ทิศกลับ เขียนทับ queries.yml อย่ารันมั่ว</div>
+    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml → memory load</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_recipe.md</code></div>
+  </section>
+
+  <!-- CLI -->
+  <section id="cli">
+    <div class="kicker">10 — อ้างอิง</div>
+    <h2>CLI cheat-sheet</h2>
+    <table class="tbl">
+      <thead><tr><th>งาน</th><th>คำสั่ง</th></tr></thead>
+      <tbody>
+        <tr><td>รัน SQL (ชื่อ model)</td><td><code>wren --sql "SELECT ..." -o table</code></td></tr>
+        <tr><td>ดู SQL ที่ expand จริง</td><td><code>wren dry-plan --sql "..."</code></td></tr>
+        <tr><td>ตรวจ SQL ไม่คืน row</td><td><code>wren dry-run --sql "..."</code></td></tr>
+        <tr><td>compile → mdl.json</td><td><code>wren context build</code></td></tr>
+        <tr><td>index schema/instructions</td><td><code>wren memory index</code></td></tr>
+        <tr><td>โหลด queries.yml → store</td><td><code>wren memory load queries.yml</code></td></tr>
+        <tr><td>หา query เก่าคล้าย</td><td><code>wren memory recall -q "..."</code></td></tr>
+        <tr><td>เก็บคู่ คำถาม↔SQL</td><td><code>wren memory store --nl "..." --sql "..."</code></td></tr>
+        <tr><td>ดูรายการที่จำไว้</td><td><code>wren memory list</code></td></tr>
+        <tr><td>ดู/สลับ profile</td><td><code>wren profile list · switch &lt;name&gt;</code></td></tr>
+      </tbody>
+    </table>
+    <div class="note warn">แก้ config ทุกครั้ง → <code>wren context build</code> · แตะ <code>instructions.md</code> → <code>+ wren memory index</code> · แตะ <code>queries.yml</code> → <code>wren memory load queries.yml</code> (ไม่ใช่ index!)</div>
+  </section>
+
+  <footer>
+    <span>WrenAI semantic layer · demo project · <a href="manual.html">คู่มือฉบับเต็ม →</a> · <a href="../index.html">หน้าหลัก</a></span>
+    <span>repo ทางการ: <a href="https://github.com/Canner/WrenAI" target="_blank" rel="noopener noreferrer">Canner/WrenAI</a></span>
+  </footer>
+</main>
+</div>
+
+<script>
+// progress + scroll-spy
+const prog=document.getElementById('prog'),secs=[...document.querySelectorAll('section')],links=[...document.querySelectorAll('nav a')];
+let navLock=false,navTimer;
+const setActive=id=>links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+window.lockSpyTo=id=>{navLock=true;setActive(id);clearTimeout(navTimer);navTimer=setTimeout(()=>navLock=false,900);};
+addEventListener('scroll',()=>{
+  const h=document.documentElement,sc=h.scrollTop,mx=h.scrollHeight-h.clientHeight;
+  prog.style.width=(mx>0?sc/mx*100:0)+'%';
+  if(navLock)return;                          // คลิก nav → ล็อก active ไว้ระหว่าง smooth-scroll
+  let cur=secs[0].id;
+  for(const s of secs){if(sc>=s.offsetTop-110)cur=s.id;}
+  if(sc>=mx-2)cur=secs[secs.length-1].id;   // ถึงล่างสุด → active section สุดท้าย (กันค้างที่ตัวก่อนหน้า)
+  setActive(cur);
+},{passive:true});
+
+// mobile nav toggle
+const navEl=document.querySelector('nav'),navBtn=document.getElementById('navtoggle');
+const closeNav=()=>{navEl.classList.remove('open');navBtn.textContent='☰';navBtn.setAttribute('aria-expanded','false');};
+navBtn.onclick=()=>{const o=navEl.classList.toggle('open');navBtn.textContent=o?'✕':'☰';navBtn.setAttribute('aria-expanded',o);};
+// explicit smooth-scroll on nav click (native hash scroll undershoots with sticky layout + late font reflow)
+navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{
+  const id=a.getAttribute('href').slice(1),el=document.getElementById(id);
+  if(!el)return;
+  e.preventDefault();
+  closeNav();
+  window.lockSpyTo(id);                        // active ทันที + ล็อกกัน spy override ระหว่าง scroll
+  const y=el.getBoundingClientRect().top+window.scrollY-18;
+  window.scrollTo({top:y,behavior:'smooth'});
+  history.replaceState(null,'','#'+id);
+}));
+
+// trap flip
+document.querySelectorAll('.trap').forEach(t=>{t.setAttribute('aria-pressed','false');t.onclick=()=>{const f=t.classList.toggle('flip');t.setAttribute('aria-pressed',f);};});
+
+// reveal on scroll
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('section:not(.hero) > *').forEach((el,i)=>{el.classList.add('in');el.style.transitionDelay=(i%3*60)+'ms';io.observe(el);});
+
+// copy buttons
+document.querySelectorAll('.cp').forEach(b=>b.onclick=()=>{
+  const t=b.closest('.code').querySelector('pre').innerText;
+  const ok=()=>{const o=b.textContent;b.textContent='คัดลอกแล้ว ✓';b.style.color='var(--green)';setTimeout(()=>{b.textContent=o;b.style.color='';},1400);};
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){b.textContent='คัดลอกไม่ได้';}document.body.removeChild(ta);};
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok).catch(fb);else fb();
+});
+
+// distance bars animate when visible
+const distIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  e.target.querySelectorAll('.drow').forEach(r=>{const d=parseFloat(r.querySelector('.dv').textContent);r.querySelector('.dfill').style.width=Math.min(d/1.5*100,100)+'%';});
+  distIO.unobserve(e.target);}}),{threshold:.3});
+distIO.observe(document.getElementById('distDemo'));
+
+// before/after comparison cards
+const CASES=[
+  {q:'ลูกค้ามีกี่คน',trap:'Trap 1 · v1/v2',
+   raw:'SELECT COUNT(*) FROM customers_v1',rawN:350,rawNote:'นับตารางที่ตายแล้ว',
+   wren:'SELECT COUNT(*) FROM customers  → customers_v2',wrenN:200,wrenNote:'resolve ไปตารางจริง',
+   foot:'ต่าง <b>150 คน</b> — LLM ไม่รู้ว่า v1 ตาย เลือกผิดเงียบๆ'},
+  {q:'revenue รวมเท่าไร',trap:'Trap 2 · status',
+   raw:'SELECT SUM(total) FROM orders',rawN:502200,rawNote:'รวม pending/refunded/cancelled',
+   wren:"SELECT SUM(total) FROM orders WHERE status=2",wrenN:143640,wrenNote:'เฉพาะ paid (status 2)',
+   foot:'raw เป่ายอด <b>3.5 เท่า</b> เพราะไม่รู้ว่า 2 = paid'},
+  {q:'ลูกค้า active 90 วัน',trap:'Trap 4 · เวลา',
+   raw:"WHERE created_at >= now()-'90d'",rawN:195,rawNote:'ใช้ created_at + ไม่กรอง paid',
+   wren:"WHERE status=2 AND paid_at >= now()-'90d'",wrenN:57,wrenNote:'paid_at + กรอง paid',
+   foot:'ต่าง <b>3.4 เท่า</b> — เลือก timestamp ผิด + ลืมกรอง paid'},
+  {q:'revenue รายสินค้า',trap:'Trap 5 · ราคา',
+   raw:'SUM(qty × products.price)',rawN:2328750,rawNote:'list price ปัจจุบัน + ไม่กรอง status',
+   wren:'SUM(qty × order_items.unit_price) WHERE status=2',wrenN:570000,wrenNote:'ราคาตอนขายจริง + เฉพาะ paid',
+   foot:'raw เป่ายอด <b>~4 เท่า</b> — ใช้ราคา list แทนราคาขาย + นับ order ที่ยังไม่จ่าย'},
+];
+const fmt=n=>n.toLocaleString('en-US');
+function buildCmp(c,i){
+  const el=document.createElement('div');el.className='cmp';
+  el.innerHTML=`<div class="cmp-head"><div class="cmp-q">${c.q}<span>${c.trap}</span></div>
+    <div class="toggle"><button class="raw on">✗ raw SQL</button><button class="wren">✓ Wren</button></div></div>
+    <div class="cmp-body"><div class="cmp-sql raw">${c.raw}</div>
+    <div class="cmp-res"><div class="big raw" data-n="0">0</div><div class="note"></div></div></div>
+    <div class="cmp-foot">${c.foot}</div>`;
+  const sql=el.querySelector('.cmp-sql'),big=el.querySelector('.big'),note=el.querySelector('.cmp-res .note'),
+    bRaw=el.querySelector('.toggle .raw'),bWren=el.querySelector('.toggle .wren');
+  let shown=false;
+  function set(mode,anim){
+    const raw=mode==='raw';
+    sql.className='cmp-sql '+mode;sql.textContent=raw?c.raw:c.wren;
+    big.className='big '+mode;note.textContent=raw?c.rawNote:c.wrenNote;
+    bRaw.classList.toggle('on',raw);bWren.classList.toggle('on',!raw);
+    countTo(big,raw?c.rawN:c.wrenN,anim);
+  }
+  bRaw.onclick=()=>set('raw',true);bWren.onclick=()=>set('wren',true);
+  // initial
+  const vis=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!shown){shown=true;set('raw',true);vis.unobserve(e.target);}}),{threshold:.4});
+  vis.observe(el);
+  return el;
+}
+function countTo(node,target,anim){
+  if(!anim){node.textContent=fmt(target);return;}
+  const start=parseInt(node.dataset.n||0),t0=performance.now(),dur=900;
+  function tick(now){const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3),v=Math.round(start+(target-start)*e);
+    node.textContent=fmt(v);if(p<1)requestAnimationFrame(tick);else node.dataset.n=target;}
+  requestAnimationFrame(tick);
+}
+const host=document.getElementById('cmpHost');CASES.forEach((c,i)=>host.appendChild(buildCmp(c,i)));
+</script>
+</body>
+</html>

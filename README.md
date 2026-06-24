@@ -6,7 +6,7 @@
 มาพร้อม demo seed ที่จงใจฝัง **5 กับดัก** (ตารางตาย v1/v2, status เลขเปล่า, คอลัมน์ลับ, created_at vs paid_at, list price vs ราคาตอนขายจริง)
 เพื่อเทียบ raw SQL (ตกหลุม) กับ Wren (รอด)
 
-📖 **คู่มือ interactive (เปิดได้เลย):** https://jason2071.github.io/wren-learning/
+📖 **เว็บคู่มือ (เปิดได้เลย):** https://jason2071.github.io/wren-learning/ — landing เลือก Interactive / คู่มือเต็ม
 
 ---
 
@@ -14,8 +14,9 @@
 
 | ไฟล์ | เนื้อหา | อ่านเมื่อ |
 |---|---|---|
-| [`docs/wren_manual.md`](docs/wren_manual.md) · [`.html`](docs/wren_manual.html) | **คู่มือเดียวจบ** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + ตัวอย่างจริง (เวอร์ชัน `.html` มี sidebar TOC เปิดในเบราว์เซอร์) | อยากได้ครบที่เดียว / เอาไปสอนต่อ |
-| [🌐 live](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — before/after toggle, flip cards, distance bars, mobile nav | อยากดูแบบเล่นได้ |
+| [🌐 เว็บ landing](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **หน้าหลัก** — เลือก Interactive / คู่มือเต็ม | จุดเริ่ม |
+| [`docs/html/interactive.html`](docs/html/interactive.html) | **Interactive** — flip cards, before/after toggle, distance bars | อยากดูแบบเล่นได้ |
+| [`docs/html/manual.html`](docs/html/manual.html) · [`wren_manual.md`](docs/wren_manual.md) | **คู่มือเดียวจบ** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + ตัวอย่างจริง (html มี sidebar TOC) | อยากได้ครบที่เดียว / เอาไปสอนต่อ |
 | [`docs/wren_concept.md`](docs/wren_concept.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
 | [`docs/wren_playbook.md`](docs/wren_playbook.md) | เล่นกับดักจริง + เลขจริงจาก seed | ตอนจะ demo |
 | [`docs/wren_recipe.md`](docs/wren_recipe.md) | recipe คำถามใหม่ — เพิ่มไฟล์ไหน รันอะไร ทางลัด | เจอคำถามใหม่ |
