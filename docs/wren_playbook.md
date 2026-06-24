@@ -174,7 +174,7 @@ EOF
 wren context build && wren memory index   # ถ้าแตะ instructions.md (re-index schema + instructions)
 wren memory load queries.yml              # คู่ใน queries.yml เข้า store ← load ไม่ใช่ index!
 ```
-> ⚠️ `queries.yml` เข้า store ด้วย `memory load` — `memory index` สร้างแค่ auto browse queries ไม่ดึงคู่ curate. ดู [recipe › Gotcha](wren_new_question_recipe.md)
+> ⚠️ `queries.yml` เข้า store ด้วย `memory load` — `memory index` สร้างแค่ auto browse queries ไม่ดึงคู่ curate. ดู [recipe › Gotcha](wren_recipe.md)
 
 **4. verify ว่า agent ดึง context ถูก**
 ```bash

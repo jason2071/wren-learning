@@ -246,7 +246,7 @@ columns:
   - name: national_id      # ⚠️ ข้อมูลลับ — เปิดเฉพาะกรณีมีสิทธิ์จริง
     type: TEXT
 ```
-แล้ว `wren context build`. **โดย default ไม่ควรเปิด** — masking ออกแบบมากันรั่ว ([playbook](wren_demo_playbook.md) Trap 3)
+แล้ว `wren context build`. **โดย default ไม่ควรเปิด** — masking ออกแบบมากันรั่ว ([playbook](wren_playbook.md) Trap 3)
 
 ### กลุ่ม C — ต้องเพิ่ม **relationship** (ตารางใหม่ที่ยังไม่ผูก)
 

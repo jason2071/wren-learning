@@ -439,7 +439,7 @@ footer a:hover{text-decoration:underline}
     </div>
     <div class="note warn"><b>ลำดับบังคับ:</b> <code>context build</code> ต้องก่อน <code>memory index</code> เสมอ (index อ่าน mdl.json) · เพิ่ม column/relationship → build ก่อนรัน SQL ที่ใช้ field ใหม่ · <code>store</code> เข้า memory ตรง ไม่ต้อง build</div>
     <div class="note warn"><b>queries.yml → store ใช้ <code>memory load</code> ไม่ใช่ <code>memory index</code>:</b> <code>index</code> สร้างแค่ auto browse queries (List all X) — ไม่ดึงคู่ curate เข้า recall · <code>wren memory load queries.yml</code> (<code>--upsert</code> ถ้าแก้ SQL เดิม) · <code>memory dump</code> = ทิศกลับ เขียนทับ queries.yml อย่ารันมั่ว</div>
-    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml → memory load</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_new_question_recipe.md</code></div>
+    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml → memory load</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_recipe.md</code></div>
   </section>
 
   <!-- CLI -->
