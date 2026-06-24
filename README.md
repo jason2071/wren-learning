@@ -14,7 +14,7 @@
 
 | ไฟล์ | เนื้อหา | อ่านเมื่อ |
 |---|---|---|
-| [`docs/wren_manual.md`](docs/wren_manual.md) | **คู่มือเดียวจบ** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + ตัวอย่างจริง + สคริปต์สอน | อยากได้ครบที่เดียว / เอาไปสอนต่อ |
+| [`docs/wren_manual.md`](docs/wren_manual.md) · [`.html`](docs/wren_manual.html) | **คู่มือเดียวจบ** — ติดตั้ง→query→เพิ่มตาราง→memory→troubleshoot + ตัวอย่างจริง (เวอร์ชัน `.html` มี sidebar TOC เปิดในเบราว์เซอร์) | อยากได้ครบที่เดียว / เอาไปสอนต่อ |
 | [🌐 live](https://jason2071.github.io/wren-learning/) · [`docs/index.html`](docs/index.html) | **เวอร์ชัน interactive** — before/after toggle, flip cards, distance bars, mobile nav | อยากดูแบบเล่นได้ |
 | [`docs/wren_concept.md`](docs/wren_concept.md) | concept — Wren คืออะไร, memory ทำงานยังไง | รอบแรก ให้เห็นภาพ |
 | [`docs/wren_playbook.md`](docs/wren_playbook.md) | เล่นกับดักจริง + เลขจริงจาก seed | ตอนจะ demo |

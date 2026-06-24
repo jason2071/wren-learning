@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือ Wren ฉบับสมบูรณ์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#f6f7f9; --panel:#ffffff; --panel2:#eef1f5;
+  --line:#e4e8ee; --line2:#cdd4df;
+  --fg:#1b1f29; --mut:#586173; --dim:#8b94a6;
+  --amber:#b3730c; --amber-soft:#b3730c16;
+  --cyan:#0c8395; --red:#cf3b25; --green:#2c8c5a; --violet:#5b4fc4;
+  --serif:'Fraunces',Georgia,serif;
+  --thai:'IBM Plex Sans Thai',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{background:var(--ink);color:var(--fg);font-family:var(--thai);font-weight:400;
+  line-height:1.75;font-size:16px;letter-spacing:.1px;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(900px 500px at 12% -5%,#e7eefb 0%,transparent 55%),
+  radial-gradient(800px 600px at 95% 8%,#f6ecf1 0%,transparent 50%),var(--ink)}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:100;
+  background:linear-gradient(90deg,var(--amber),var(--cyan));box-shadow:0 0 12px var(--amber)}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px;
+  display:grid;grid-template-columns:262px 1fr;gap:48px}
+@media(max-width:980px){.wrap{grid-template-columns:1fr;gap:0}}
+
+/* nav */
+nav{position:sticky;top:0;align-self:start;height:100vh;padding:34px 0 30px;
+  display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.brand{font-family:var(--serif);font-weight:900;font-size:21px;letter-spacing:-.5px;line-height:1.15;margin-bottom:4px}
+.brand i{font-style:italic;color:var(--amber);font-weight:500}
+.brand small{display:block;font-family:var(--thai);font-weight:400;font-size:11.5px;color:var(--dim);letter-spacing:.3px;margin-top:5px}
+.brand a{color:var(--cyan);text-decoration:none;font-size:11.5px;font-family:var(--mono)}
+.brand a:hover{text-decoration:underline}
+#toc{margin-top:14px;display:flex;flex-direction:column;gap:1px}
+#toc a{color:var(--mut);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;
+  border-left:2px solid transparent;transition:.18s;display:flex;gap:9px;align-items:baseline;line-height:1.4}
+#toc a .nn{font-family:var(--mono);font-size:10.5px;color:var(--dim);min-width:15px}
+#toc a:hover{color:var(--fg);background:#00000006}
+#toc a.on{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+#toc a.on .nn{color:var(--amber)}
+#navtoggle{display:none}
+@media(max-width:980px){
+  #navtoggle{display:flex;position:fixed;top:13px;right:14px;z-index:101;width:44px;height:44px;
+    align-items:center;justify-content:center;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--amber);font-size:20px;cursor:pointer}
+  nav{position:fixed;inset:0;height:100vh;width:100%;z-index:100;
+    background:#fffffff2;backdrop-filter:blur(8px);padding:60px 24px 30px;
+    transform:translateY(-100%);transition:transform .3s ease;opacity:0}
+  nav.open{transform:none;opacity:1}
+}
+
+main{padding:40px 0 50vh;min-width:0;max-width:80ch}
+
+/* content typography */
+main h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,4.4vw,46px);
+  line-height:1.05;letter-spacing:-1px;margin:8px 0 18px}
+main h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3vw,31px);
+  line-height:1.15;letter-spacing:-.4px;margin:54px 0 16px;padding-top:14px;
+  scroll-margin-top:20px;border-top:1px solid var(--line)}
+main h2:first-of-type{border-top:none}
+main h3{font-family:var(--thai);font-weight:700;font-size:18.5px;margin:30px 0 10px;color:var(--fg)}
+main h4{font-family:var(--thai);font-weight:600;font-size:15.5px;margin:18px 0 8px;color:var(--cyan)}
+main p{color:var(--mut);margin:0 0 14px}
+main strong{color:var(--fg);font-weight:600}
+main em{color:var(--cyan);font-style:normal;font-weight:500}
+main a{color:var(--cyan)}
+main ul,main ol{color:var(--mut);margin:0 0 16px;padding-left:24px}
+main li{margin-bottom:6px}
+main li::marker{color:var(--dim)}
+main hr{border:none;border-top:1px solid var(--line);margin:0}
+main img{max-width:100%}
+
+/* inline code */
+main :not(pre)>code{font-family:var(--mono);font-size:.85em;background:#eef1f6;color:#0a6f7e;
+  padding:1.5px 6px;border-radius:5px;border:1px solid var(--line);white-space:nowrap}
+
+/* code blocks */
+main pre{background:#0f1320;border:1px solid #1c2334;border-radius:12px;
+  padding:16px 18px;overflow-x:auto;margin:0 0 18px;position:relative}
+main pre code{font-family:var(--mono);font-size:13px;line-height:1.65;color:#d4dcec;white-space:pre;background:none;border:none;padding:0}
+main pre::before{content:attr(data-lang);position:absolute;top:8px;right:12px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
+
+/* tables */
+main table{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14px;
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+main thead{background:var(--panel2)}
+main th{text-align:left;font-weight:600;color:var(--fg);padding:10px 13px;border-bottom:1px solid var(--line2);font-size:13.5px}
+main td{padding:9px 13px;border-bottom:1px solid var(--line);color:var(--mut);vertical-align:top}
+main tr:last-child td{border-bottom:none}
+main tbody tr:hover{background:#00000004}
+main td code,main th code{white-space:normal}
+
+/* blockquote → callout */
+main blockquote{background:#fbf4e6;border-left:3px solid var(--amber);
+  border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 18px;color:var(--fg)}
+main blockquote p{color:#6f4a0c;margin:0}
+main blockquote code{background:#ffffffcc;color:#0a6f7e;border-color:#ecdcbb}
+
+footer{grid-column:1/-1;border-top:1px solid var(--line);margin-top:40px;padding:26px 0;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--dim);font-size:13px}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<button id="navtoggle" aria-label="menu">☰</button>
+<div class="wrap">
+<nav>
+  <div class="brand">คู่มือ Wren<i>AI</i>
+    <small>ฉบับสมบูรณ์ · ใช้สอน + ลงมือทำ</small>
+    <a href="index.html">↗ เวอร์ชัน interactive (slide)</a>
+  </div>
+  <div id="toc"></div>
+</nav>
+<main id="content">
+<h1 id="คู่มือ-wren-ฉบับสมบูรณ์-ใช้สอน--ลงมือทำได้เลย">คู่มือ Wren ฉบับสมบูรณ์ (ใช้สอน +
+ลงมือทำได้เลย)</h1>
+<blockquote>
+<p>ไฟล์เดียวจบ ตั้งแต่ติดตั้ง → ถามข้อมูล → เพิ่มตาราง → memory → แก้ปัญหา
+ตัวอย่างทุกอันใช้ของจริงจากโปรเจกต์นี้ (เลขจริงจาก seed) — copy ไปรันตามได้ เหมาะกับ:
+คนที่จะเอาไป <strong>สอนต่อ</strong> และคนที่ <strong>เพิ่งเริ่ม</strong>
+อยากใช้เป็น</p>
+</blockquote>
+<p><strong>เอกสารอื่นในโฟลเดอร์ <code>docs/</code></strong> (ไฟล์นี้รวมทุกอย่าง
+ที่เหลือคือเจาะลึกเฉพาะเรื่อง):</p>
+<ul>
+<li><code>wren_concept.md</code> — concept เน้นทำความเข้าใจ</li>
+<li><code>wren_playbook.md</code> — สคริปต์ demo 4–5 กับดัก</li>
+<li><code>wren_recipe.md</code> — checklist คำถามใหม่ + ทางลัด</li>
+<li><code>wren_reference.md</code> — ตาราง CLI lookup</li>
+<li><code>index.html</code> — เวอร์ชัน interactive (เปิดในเบราว์เซอร์)</li>
+</ul>
+<hr />
+
+<hr />
+<p><a id="0"></a></p>
+<h2 id="0-wren-คืออะไร-แก้ปัญหาอะไร">0. Wren คืออะไร แก้ปัญหาอะไร</h2>
+<p><strong>Wren = semantic layer (ชั้นความหมาย) คั่นระหว่างคำถาม กับ
+ฐานข้อมูลจริง</strong></p>
+<p>ปัญหาเวลาให้คน (หรือ LLM) เขียน SQL ตรงๆ บน DB จริง:</p>
+<ul>
+<li>ตารางมีชื่อสับสน — <code>customers_v1</code> (ตาย) vs
+<code>customers_v2</code> (ใช้จริง) จะรู้ได้ไง?</li>
+<li>คอลัมน์เป็นเลขเปล่า — <code>status = 2</code> แปลว่าอะไร?</li>
+<li>กติกาธุรกิจซ่อนอยู่ในหัวคน — "ลูกค้า active" นับยังไง? "revenue"
+รวมอะไรบ้าง?</li>
+<li>คอลัมน์ลับ — <code>national_id</code> ไม่ควรให้ทุกคนเห็น</li>
+</ul>
+<p>Wren แก้โดยให้เราถามผ่าน <strong>ชื่อ model</strong> (เช่น
+<code>customers</code>) ไม่ใช่ตารางจริง แล้ว Wren แปลให้:</p>
+<pre><code>คำถาม &quot;ลูกค้ามีกี่คน&quot;
+   │
+   ▼  Wren (semantic layer)
+   │   - customers → public.customers_v2  (ไม่ใช่ v1)
+   │   - เห็นเฉพาะคอลัมน์ที่ประกาศ (national_id ถูกซ่อน)
+   │   - รู้กติกา (active = status 2 + paid_at 90 วัน)
+   ▼
+SQL จริงที่ถูกต้อง → PostgreSQL → คำตอบ</code></pre>
+<p><strong>ผลลัพธ์:</strong> ถามด้วยภาษาคนหรือ SQL ชื่อง่าย แล้วได้ SQL ที่ตรงตาราง
++ ถูกกติกา โดยไม่ต้องจำ schema จริง</p>
+<hr />
+<p><a id="1"></a></p>
+<h2 id="1-สถาปัตยกรรม--5-ชิ้นส่วน">1. สถาปัตยกรรม — 5 ชิ้นส่วน</h2>
+<p>Wren project ประกอบด้วยไฟล์ config ที่ทำงานร่วมกัน (config คือ "source",
+<code>target/</code> กับ <code>.wren/</code> คือของ generated):</p>
+<pre><code>my-wren-project/
+├── wren_project.yml          # ① ผูกทุกอย่าง: catalog, schema, data_source, profile
+├── connection.yml            # ② datasource config (อ่าน ${PG_*} จาก env)
+├── models/                   # ③ นิยามตาราง — 1 โฟลเดอร์ = 1 model
+│   ├── customers_v2/metadata.yml   #   name: customers → table: customers_v2
+│   ├── orders/metadata.yml
+│   ├── products/metadata.yml
+│   └── order_items/metadata.yml
+├── relationships.yml         # ④ join ระหว่าง model
+├── instructions.md           # ⑤ กติกาธุรกิจที่ SQL บอกไม่ได้
+├── queries.yml               #    คู่ NL↔SQL ที่ curate ไว้ (seed memory recall)
+├── demo_db/seed_wren_demo.sql#    สคริปต์ seed PostgreSQL
+├── target/mdl.json           #    [generated] compile จาก config — ห้ามแก้มือ
+└── .wren/memory/             #    [generated] LanceDB index ของ memory</code></pre>
+<h3 id="③-modelsmetadatayml--หัวใจของ-indirection">③
+models/<name>/metadata.yml — หัวใจของ indirection</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> customers</span><span class="co">                    # ← ชื่อที่ใช้ query (alias)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">properties</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;Current (v2) customer records...&quot;</span><span class="co">   # agent อ่าน description ด้วย</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table_reference</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">catalog</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schema</span><span class="kw">:</span><span class="at"> public</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">table</span><span class="kw">:</span><span class="at"> customers_v2</span><span class="co">              # ← ตารางจริงใน DB</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">primary_key</span><span class="kw">:</span><span class="at"> customer_id</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">columns</span><span class="kw">:</span><span class="co">                           # ← เห็นเฉพาะที่ list ไว้</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> customer_id</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> first_name</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">type</span><span class="kw">:</span><span class="at"> TEXT</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">  # ... (ไม่ใส่ national_id → ถูกซ่อนอัตโนมัติ = masking by omission)</span></span></code></pre></div>
+<p><strong>กลไกสำคัญ 2 อย่าง:</strong></p>
+<ol type="1">
+<li><strong>เปลี่ยนชื่อตาราง</strong> — <code>name: customers</code> ชี้ไป
+<code>table: customers_v2</code> → คนถาม <code>customers</code>
+ไม่มีทางโดน <code>customers_v1</code> ที่ตายแล้ว</li>
+<li><strong>ซ่อนคอลัมน์ด้วยการไม่ประกาศ</strong> — <code>national_id</code>
+มีในตารางจริง แต่ไม่อยู่ใน <code>columns:</code> → agent มองไม่เห็น query
+ไม่ได้</li>
+</ol>
+<h3 id="④-relationshipsyml--join-สำเร็จรูป">④ relationships.yml — join
+สำเร็จรูป</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relationships</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> order_customers</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">orders</span><span class="kw">,</span><span class="at"> customers</span><span class="kw">]</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> orders.customer_id = customers.customer_id</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> item_orders</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">order_items</span><span class="kw">,</span><span class="at"> orders</span><span class="kw">]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> order_items.order_id = orders.order_id</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> item_products</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">order_items</span><span class="kw">,</span><span class="at"> products</span><span class="kw">]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> order_items.product_id = products.product_id</span></span></code></pre></div>
+<blockquote>
+<p>condition อ้าง <strong>ชื่อ model</strong> ไม่ใช่ตารางจริง ·
+<code>MANY_TO_ONE</code> = หลาย order_items ต่อ 1 order</p>
+</blockquote>
+<h3 id="⑤-instructionsmd--ความหมายที่-sql-เขียนไม่ได้">⑤ instructions.md —
+ความหมายที่ SQL เขียนไม่ได้</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Definitions</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;active customer&quot; = ลูกค้าที่มี order status = 2 (paid) ใน 90 วันล่าสุด</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;revenue&quot; = SUM(orders.total) เฉพาะ status = 2</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;revenue รายสินค้า&quot; = SUM(order_items.unit_price * quantity) + join orders status=2 — ห้ามใช้ products.price</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Status codes</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>1=pending, 2=paid, 3=shipped, 4=refunded, 5=cancelled</span></code></pre></div>
+<blockquote>
+<p><strong>ไฟล์นี้ load-bearing</strong> — แก้นิยามที่นี่ = เปลี่ยนความหมายของ SQL
+ที่ generate ออกมา</p>
+</blockquote>
+<h3 id="queriesyml--คู่-nlsql-ที่-curate">queries.yml — คู่ NL↔︎SQL ที่
+curate</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">nl</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;revenue รายสินค้า top 5&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">sql</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;SELECT p.name, SUM(oi.quantity * oi.unit_price) AS revenue FROM order_items oi JOIN ...&quot;</span></span></code></pre></div>
+<blockquote>
+<p>สอน Wren ว่าคำถามนี้ตอบด้วย SQL แบบนี้ → ครั้งหน้า <code>recall</code> เจอ
+ใช้เป็นตัวอย่าง</p>
+</blockquote>
+<hr />
+<p><a id="2"></a></p>
+<h2 id="2-ติดตั้ง--ตั้งค่า">2. ติดตั้ง + ตั้งค่า</h2>
+<h3 id="21-ติดตั้ง-wren-ครั้งเดียว">2.1 ติดตั้ง Wren (ครั้งเดียว)</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv ~/.venvs/wren            <span class="co"># สร้าง virtual env แยก</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.venvs/wren/bin/activate        <span class="co"># เข้า venv (prompt จะขึ้น (wren))</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="st">&quot;wrenai[postgres,memory]&quot;</span>    <span class="co"># ติดตั้ง + ตัวต่อ postgres + memory</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pylance                      <span class="co"># (เผื่อ memory dump/list — ดู Troubleshooting)</span></span></code></pre></div>
+<h3 id="22-ตั้งค่า-db-credential">2.2 ตั้งค่า DB credential</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env                     <span class="co"># คัดลอก template</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># แก้ค่าจริงใน .env: PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD</span></span></code></pre></div>
+<p><code>.env</code> ถูก gitignore (credential ไม่หลุด) ·
+<code>connection.yml</code> อ่านค่าผ่าน <code>${PG_*}</code></p>
+<h3 id="23-warning-ทุกครั้งที่เปิด-terminal-ใหม่-ต้องทำ-3-อย่างนี้ก่อน">2.3 ⚠️
+ทุกครั้งที่เปิด terminal ใหม่ ต้องทำ 3 อย่างนี้ก่อน</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Desktop/work/my-wren-project        <span class="co"># 1. เข้าโฟลเดอร์ project</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.venvs/wren/bin/activate        <span class="co"># 2. เข้า venv (ไม่งั้น `wren` เป็นคนละตัว)</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">$(</span><span class="fu">grep</span> <span class="at">-v</span> <span class="st">&#39;^#&#39;</span> .env <span class="kw">|</span> <span class="fu">xargs</span><span class="va">)</span>      <span class="co"># 3. โหลด env (ไม่งั้น psql/wren ต่อ DB ไม่ได้)</span></span></code></pre></div>
+<blockquote>
+<p><strong>อาการถ้าลืม:</strong> ลืมข้อ 2 →
+<code>wren: command not found</code> หรือไม่มี subcommand
+<code>memory</code> · ลืมข้อ 3 →
+<code>psql: connection ... failed: No such file or directory</code>
+(เพราะ <code>$PG_HOST</code> ว่าง เลย default ไป local socket)</p>
+</blockquote>
+<hr />
+<p><a id="3"></a></p>
+<h2 id="3-seed-demo-db--5-กับดัก">3. seed demo DB + 5 กับดัก</h2>
+<h3 id="31-รัน-seed-ครั้งแรก">3.1 รัน seed (ครั้งแรก)</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">psql</span> <span class="at">-h</span> <span class="st">&quot;</span><span class="va">$PG_HOST</span><span class="st">&quot;</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$PG_PORT</span><span class="st">&quot;</span> <span class="at">-U</span> <span class="st">&quot;</span><span class="va">$PG_USER</span><span class="st">&quot;</span> <span class="at">-d</span> <span class="st">&quot;</span><span class="va">$PG_DATABASE</span><span class="st">&quot;</span> <span class="at">-f</span> demo_db/seed_wren_demo.sql</span></code></pre></div>
+<p>จะได้ตาราง (deterministic — รันกี่ครั้งเลขเท่าเดิม):</p>
+<table>
+<thead>
+<tr>
+<th>ตารางจริง</th>
+<th>model</th>
+<th>แถว</th>
+<th>บทบาท</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>customers_v1</code></td>
+<td>— (ไม่ map)</td>
+<td>350</td>
+<td>ตารางตาย เหยื่อล่อ</td>
+</tr>
+<tr>
+<td><code>customers_v2</code></td>
+<td><code>customers</code></td>
+<td>200</td>
+<td>ตัวจริง — <code>email/phone/national_id</code> คอลัมน์ลับ</td>
+</tr>
+<tr>
+<td><code>orders</code></td>
+<td><code>orders</code></td>
+<td>1200</td>
+<td><code>status</code> เลข 1-5, มี <code>created_at</code> +
+<code>paid_at</code></td>
+</tr>
+<tr>
+<td><code>products</code></td>
+<td><code>products</code></td>
+<td>40</td>
+<td><code>category_code</code> เลข 1-5, <code>price</code> = list ปัจจุบัน,
+<code>is_active</code></td>
+</tr>
+<tr>
+<td><code>order_items</code></td>
+<td><code>order_items</code></td>
+<td>3000</td>
+<td>line item, <code>unit_price</code> = ราคาตอนขายจริง</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-กับดักทั้ง-5-ทำไม-raw-sql-ผิด-แต่-wren-รอด">3.2 กับดักทั้ง 5 (ทำไม raw
+SQL ผิด แต่ Wren รอด)</h3>
+<ol type="1">
+<li><strong>ตารางตาย</strong> — <code>customers_v1</code> (350
+แถวปนข้อมูลมั่ว) vs <code>customers_v2</code> (200 จริง). คนเขียน SQL เองมักหยิบ
+v1 → นับเกิน. Wren map <code>customers</code> → v2 เสมอ</li>
+<li><strong>status เลขเปล่า</strong> — <code>2=paid</code>. ไม่รู้รหัส = กรอง
+revenue ผิด. instructions.md บอกไว้</li>
+<li><strong>คอลัมน์ลับ</strong> — <code>national_id</code> ไม่อยู่ใน model →
+query ไม่ได้ (masking)</li>
+<li><strong>created_at vs paid_at</strong> — "active/revenue" ใช้
+<code>paid_at</code> (วันจ่าย) ไม่ใช่ <code>created_at</code> (วันสมัคร/วันสร้าง
+order)</li>
+<li><strong>list price vs ราคาขายจริง</strong> —
+<code>products.price</code> = ราคา list "ปัจจุบัน" (สูงกว่าตอนขาย ~15%).
+revenue รายสินค้าต้องใช้ <code>order_items.unit_price × quantity</code> +
+กรอง <code>status=2</code> ห้ามใช้ <code>products.price</code></li>
+</ol>
+<h3 id="33-พิสูจน์กับดักด้วยตัวเลขจริง">3.3 พิสูจน์กับดักด้วยตัวเลขจริง</h3>
+<p>ท้ายไฟล์ <code>seed_wren_demo.sql</code> มี query เทียบ — รันแล้วได้:</p>
+<pre><code>กับดัก #1 (active customers):
+  WRONG (v1, ไม่กรอง status, ใช้ created_at) = 195
+  CORRECT (v2, status=2, paid_at 90 วัน)     = 57
+
+กับดัก #5 (revenue รายสินค้า):
+  WRONG (products.price, ไม่กรอง status)     = 2,328,750
+  CORRECT (unit_price, status=2)             = 570,000</code></pre>
+<blockquote>
+<p>ต่างกัน 3-4 เท่า "ดูถูกแต่ผิด" — นี่คือเหตุผลที่ต้องมี semantic layer</p>
+</blockquote>
+<hr />
+<p><a id="4"></a></p>
+<h2 id="4-วงจร-build--index--load--หัวใจที่ต้องเข้าใจ">4. วงจร build / index
+/ load — หัวใจที่ต้องเข้าใจ</h2>
+<p>Config คือ source. ต้อง "compile" ก่อนถึงจะมีผล. <strong>มี 3
+คำสั่งที่ทำคนละหน้าที่ — นี่คือจุดที่คนสับสนบ่อยสุด:</strong></p>
+<table>
+<thead>
+<tr>
+<th>คำสั่ง</th>
+<th>อ่านอะไร</th>
+<th>สร้าง/อัปเดตอะไร</th>
+<th>ใช้เมื่อ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wren context build</code></td>
+<td><code>models/</code>, <code>relationships.yml</code></td>
+<td><code>target/mdl.json</code></td>
+<td>แก้ model หรือ relationship</td>
+</tr>
+<tr>
+<td><code>wren memory index</code></td>
+<td><code>target/mdl.json</code>, <code>instructions.md</code></td>
+<td>schema items + auto browse queries ใน
+<code>.wren/memory/</code></td>
+<td>แก้ instructions.md / เพิ่ม model</td>
+</tr>
+<tr>
+<td><code>wren memory load queries.yml</code></td>
+<td><code>queries.yml</code></td>
+<td>คู่ NL↔︎SQL ใน store</td>
+<td>แก้ queries.yml</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="warning-gotcha-สำคัญที่สุด-queriesyml-เข้า-store-ด้วย-load-ไม่ใช่-index">⚠️
+Gotcha สำคัญที่สุด: queries.yml เข้า store ด้วย <code>load</code> ไม่ใช่
+<code>index</code></h3>
+<pre><code>wren memory index           → สร้างแค่ auto browse queries (&quot;List all products&quot;, &quot;Total X in Y&quot;)
+                              ❌ ไม่ดึงคู่ curate จาก queries.yml เข้า recall
+wren memory load queries.yml → ✅ import คู่ที่เราเขียนเข้า store จริง
+wren memory dump            → ⚠️ ทิศกลับ! export store เขียนทับ queries.yml (อย่ารันมั่ว)</code></pre>
+<p><strong>อาการถ้าใช้ผิด:</strong> <code>index</code> แล้ว
+<code>recall "สินค้าขายดี"</code> ได้แต่ <code>"List all products"</code>
+(auto) ไม่เจอคู่ที่เขียนเอง → เพราะยังไม่ได้ <code>load</code></p>
+<h3 id="สูตรจำง่าย-แก้อะไร--รันอะไร">สูตรจำง่าย (แก้อะไร → รันอะไร)</h3>
+<pre><code>แก้ models/*.yml หรือ relationships.yml   →  wren context build
+แก้ instructions.md                       →  wren context build &amp;&amp; wren memory index
+แก้ queries.yml                           →  wren memory load queries.yml
+เพิ่ม model ใหม่                          →  wren context build &amp;&amp; wren memory index
+                                             (+ wren memory load queries.yml ถ้าเพิ่มคู่ด้วย)</code></pre>
+<blockquote>
+<p>ลำดับบังคับ: <code>context build</code> <strong>ต้องมาก่อน</strong>
+<code>memory index</code> เสมอ (index อ่าน mdl.json ที่ build สร้าง)</p>
+</blockquote>
+<hr />
+<p><a id="5"></a></p>
+<h2 id="5-ถามข้อมูล-query">5. ถามข้อมูล (query)</h2>
+<h3 id="51-รัน-sql-ผ่านชื่อ-model">5.1 รัน SQL ผ่านชื่อ model</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># นับลูกค้า (customers = model → จริงคือ customers_v2)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT COUNT(*) FROM customers&quot;</span> <span class="at">-o</span> table</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → 200</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># revenue รวม (กรอง status=2 ตามกติกา)</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT SUM(total) FROM orders WHERE status = 2&quot;</span> <span class="at">-o</span> table</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># join ข้ามตาราง — สินค้าขายดี (relationships ทำให้ join ได้)</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT p.name, SUM(oi.quantity) AS qty</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM order_items oi</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN products p ON p.product_id = oi.product_id</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN orders o ON o.order_id = oi.order_id</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="st">            WHERE o.status = 2</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="st">            GROUP BY p.name ORDER BY qty DESC LIMIT 5&quot;</span> <span class="at">-o</span> table</span></code></pre></div>
+<p><code>-o</code> เลือก output: <code>table</code> (อ่านง่าย) ·
+<code>json</code> (เอาไปต่อ jq) · <code>csv</code></p>
+<h3 id="52-ดู-sql-ที่-wren-แปลจริง-ไม่แตะ-db">5.2 ดู SQL ที่ Wren แปลจริง (ไม่แตะ
+DB)</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dry-plan = expand ชื่อ model → ตาราง/คอลัมน์จริง โดยไม่ยิง DB</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-plan <span class="at">--sql</span> <span class="st">&quot;SELECT first_name FROM customers LIMIT 5&quot;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># จะเห็น customers ถูกแทนด้วย public.customers_v2</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># dry-run = validate กับ DB จริง แต่ไม่คืน row (เช็คว่า SQL ใช้ได้ไหม)</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-run <span class="at">--sql</span> <span class="st">&quot;SELECT first_name FROM customers&quot;</span></span></code></pre></div>
+<blockquote>
+<p>ใช้ <code>dry-plan</code> ตอนสงสัยว่า model map ถูกไหม / คอลัมน์มีจริงไหม
+ก่อนรันจริง</p>
+</blockquote>
+<h3 id="53-ดูว่า-model-มีคอลัมน์อะไรบ้าง">5.3 ดูว่า model มีคอลัมน์อะไรบ้าง</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory describe <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-A12</span> <span class="at">-iE</span> <span class="st">&#39;orders|customers&#39;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># หรือดูไฟล์ตรงๆ</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> models/orders/metadata.yml</span></code></pre></div>
+<hr />
+<p><a id="6"></a></p>
+<h2 id="6-memory-เชิงลึก">6. Memory เชิงลึก</h2>
+<p>Memory = คลังคู่ NL↔︎SQL ที่ Wren ใช้เป็นตัวอย่าง (few-shot) เวลา agent เขียน
+SQL. เก็บใน LanceDB ที่ <code>.wren/memory/</code></p>
+<h3 id="61-คำสั่งทั้งหมด">6.1 คำสั่งทั้งหมด</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;คำถาม&quot;</span>            <span class="co"># หาคู่ที่ใกล้สุด (semantic) — distance ต่ำ = ใกล้</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory fetch  <span class="at">-q</span> <span class="st">&quot;คำถาม&quot;</span>            <span class="co"># ดู context ทั้งก้อนที่ agent จะดึง (schema + นิยาม)</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory store <span class="at">--nl</span> <span class="st">&quot;...&quot;</span> <span class="at">--sql</span> <span class="st">&quot;...&quot;</span> <span class="co"># เก็บ 1 คู่เข้า store ตรงๆ (ไม่ผ่านไฟล์ ไม่ git track)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory load queries.yml             <span class="co"># import คู่จาก queries.yml เข้า store</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory dump                         <span class="co"># ⚠️ export store → เขียนทับ queries.yml</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory index                        <span class="co"># index schema + สร้าง auto browse queries</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory list                         <span class="co"># ดูคู่ทั้งหมดใน store (ต้องมี pylance)</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory forget                       <span class="co"># ลบคู่</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory reset                        <span class="co"># ล้างทุกตาราง เริ่มใหม่</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory status                       <span class="co"># สถิติ index</span></span></code></pre></div>
+<h3 id="62-recall--distance-หมายถึงอะไร">6.2 recall — distance
+หมายถึงอะไร</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;สินค้าขายดี&quot;</span> <span class="at">-l</span> 3</span></code></pre></div>
+<pre><code>dist 0      สินค้าขายดี top 5 ตามจำนวน   ← ตรงเป๊ะ (0 = เหมือนเป๊ะ)
+dist 0.506  revenue รายสินค้า top 5      ← ใกล้เคียง
+dist 0.712  สินค้าที่ยังขายอยู่มีกี่ตัว   ← ห่างขึ้น</code></pre>
+<blockquote>
+<p>distance ยิ่งต่ำยิ่งใกล้ · <code>-l</code> = จำนวนผล · <code>-o json</code>
+เอาไปต่อ jq ได้</p>
+</blockquote>
+<h3 id="63-store-vs-load-vs-queriesyml--เลือกอันไหน">6.3 store vs load vs
+queries.yml — เลือกอันไหน</h3>
+<table>
+<thead>
+<tr>
+<th>วิธี</th>
+<th>git track?</th>
+<th>ใช้เมื่อ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wren memory store --nl --sql</code></td>
+<td>❌ (เข้า <code>.wren/</code> ที่ gitignore)</td>
+<td>จดเร็วๆ ใช้ส่วนตัว ไม่อยากแชร์</td>
+</tr>
+<tr>
+<td>เพิ่มใน <code>queries.yml</code> + <code>memory load</code></td>
+<td>✅ (queries.yml อยู่ใน git)</td>
+<td>อยากให้ทีม clone ไปแล้วได้ด้วย — <strong>แนะนำ</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>.wren/memory/</code> ถูก gitignore → ของที่ <code>store</code>
+ตรงๆ จะหายตอน clone ใหม่. ใส่ใน <code>queries.yml</code> ถึงจะถาวร</p>
+</blockquote>
+<h3 id="64-recall-สวยๆ-อ่านง่าย--function-ใน-zshrc">6.4 recall สวยๆ
+(อ่านง่าย) — function ใน ~/.zshrc</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wmr()</span> <span class="kw">{</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;</span><span class="va">$1</span><span class="st">&quot;</span> <span class="at">-l</span> <span class="st">&quot;</span><span class="va">${2</span><span class="op">:-</span>3<span class="va">}</span><span class="st">&quot;</span> <span class="at">-o</span> json <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">|</span> <span class="ex">jq</span> <span class="at">-r</span> <span class="st">&#39;.[] | &quot;dist \((._distance*1000|round)/1000)  \(.nl_query)\n    \(.sql_query)\n&quot;&#39;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># เรียก: wmr &quot;สินค้าขายดี&quot;   ·   wmr &quot;revenue&quot; 5</span></span></code></pre></div>
+<hr />
+<p><a id="7"></a></p>
+<h2 id="7-ตัวอย่างเต็ม--เพิ่มตารางใหม่-end-to-end">7. ตัวอย่างเต็ม — เพิ่มตารางใหม่
+end-to-end</h2>
+<p>โจทย์จริง: เพิ่ม <code>products</code> + <code>order_items</code> เข้า
+demo (พร้อมกับดัก #5). นี่คือ <strong>ลำดับที่ถูกต้อง</strong> ทำตามได้เลย</p>
+<h3 id="ขั้น-1--เพิ่ม-data-ใน-db">ขั้น 1 — เพิ่ม data ใน DB</h3>
+<p>แก้ <code>demo_db/seed_wren_demo.sql</code> เพิ่ม
+<code>CREATE TABLE products / order_items</code> + INSERT แล้วรัน:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">$(</span><span class="fu">grep</span> <span class="at">-v</span> <span class="st">&#39;^#&#39;</span> .env <span class="kw">|</span> <span class="fu">xargs</span><span class="va">)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">psql</span> <span class="at">-h</span> <span class="st">&quot;</span><span class="va">$PG_HOST</span><span class="st">&quot;</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$PG_PORT</span><span class="st">&quot;</span> <span class="at">-U</span> <span class="st">&quot;</span><span class="va">$PG_USER</span><span class="st">&quot;</span> <span class="at">-d</span> <span class="st">&quot;</span><span class="va">$PG_DATABASE</span><span class="st">&quot;</span> <span class="at">-f</span> demo_db/seed_wren_demo.sql</span></code></pre></div>
+<p>ดูท้าย output: <code>INSERT 0 40</code> (products),
+<code>INSERT 0 3000</code> (order_items) = สำเร็จ</p>
+<h3 id="ขั้น-2--สร้าง-model-metadata-1-โฟลเดอร์ตาราง">ขั้น 2 — สร้าง model
+metadata (1 โฟลเดอร์/ตาราง)</h3>
+<p><code>models/products/metadata.yml</code>:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> products</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">properties</span><span class="kw">:</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;Products. price = current list price (drifts up). For per-product revenue use order_items.unit_price, NOT this.&quot;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table_reference</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">catalog</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;&quot;</span><span class="kw">,</span><span class="at"> </span><span class="fu">schema</span><span class="kw">:</span><span class="at"> public</span><span class="kw">,</span><span class="at"> </span><span class="fu">table</span><span class="kw">:</span><span class="at"> products </span><span class="kw">}</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">primary_key</span><span class="kw">:</span><span class="at"> product_id</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">columns</span><span class="kw">:</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> product_id</span><span class="kw">,</span><span class="at">    </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at">     </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> name</span><span class="kw">,</span><span class="at">          </span><span class="fu">type</span><span class="kw">:</span><span class="at"> TEXT</span><span class="kw">,</span><span class="at">    </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> category_code</span><span class="kw">,</span><span class="at"> </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at">     </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> price</span><span class="kw">,</span><span class="at">         </span><span class="fu">type</span><span class="kw">:</span><span class="at"> DECIMAL</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> is_active</span><span class="kw">,</span><span class="at">     </span><span class="fu">type</span><span class="kw">:</span><span class="at"> BOOLEAN</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> created_at</span><span class="kw">,</span><span class="at">    </span><span class="fu">type</span><span class="kw">:</span><span class="at"> TIMESTAMP</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span></code></pre></div>
+<p><code>models/order_items/metadata.yml</code>:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> order_items</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">properties</span><span class="kw">:</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;Order line items. unit_price = price at sale time (source of truth for revenue).&quot;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table_reference</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">catalog</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;&quot;</span><span class="kw">,</span><span class="at"> </span><span class="fu">schema</span><span class="kw">:</span><span class="at"> public</span><span class="kw">,</span><span class="at"> </span><span class="fu">table</span><span class="kw">:</span><span class="at"> order_items </span><span class="kw">}</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">primary_key</span><span class="kw">:</span><span class="at"> item_id</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">columns</span><span class="kw">:</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> item_id</span><span class="kw">,</span><span class="at">    </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> order_id</span><span class="kw">,</span><span class="at">   </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> product_id</span><span class="kw">,</span><span class="at"> </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> quantity</span><span class="kw">,</span><span class="at">   </span><span class="fu">type</span><span class="kw">:</span><span class="at"> INT</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> unit_price</span><span class="kw">,</span><span class="at"> </span><span class="fu">type</span><span class="kw">:</span><span class="at"> DECIMAL</span><span class="kw">,</span><span class="at"> </span><span class="fu">not_null</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="at"> </span><span class="kw">}</span></span></code></pre></div>
+<blockquote>
+<p><strong>Type ที่ Wren MDL รองรับ:</strong>
+<code>VARCHAR · INTEGER · DOUBLE · DATE · TIMESTAMP · BOOLEAN · DECIMAL · JSON</code>
+<code>INT</code>/<code>TEXT</code> ใช้ได้ (alias) · เงินใช้
+<code>DECIMAL</code> (ไม่ใส่ precision เช่น <code>DECIMAL(10,2)</code>) ·
+bool ใช้ <code>BOOLEAN</code> (ไม่ใช่ <code>BOOL</code>) ⚠️ จุดพลาดบ่อย:
+<code>primary_key</code> ต้องชี้ไปคอลัมน์ที่มีจริงใน <code>columns:</code> (ลืมใส่
+= build พัง)</p>
+</blockquote>
+<h3 id="ขั้น-3--เพิ่ม-relationships">ขั้น 3 — เพิ่ม relationships</h3>
+<p><code>relationships.yml</code> (มี key <code>relationships:</code>
+อันเดียว ห้ามซ้ำ):</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relationships</span><span class="kw">:</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> order_customers</span><span class="kw">,</span><span class="at"> </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">orders</span><span class="kw">,</span><span class="at"> customers</span><span class="kw">],</span><span class="at">     </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span><span class="kw">,</span><span class="at"> </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> orders.customer_id = customers.customer_id </span><span class="kw">}</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> item_orders</span><span class="kw">,</span><span class="at">     </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">order_items</span><span class="kw">,</span><span class="at"> orders</span><span class="kw">],</span><span class="at">   </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span><span class="kw">,</span><span class="at"> </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> order_items.order_id = orders.order_id </span><span class="kw">}</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> item_products</span><span class="kw">,</span><span class="at">   </span><span class="fu">models</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">order_items</span><span class="kw">,</span><span class="at"> products</span><span class="kw">],</span><span class="at"> </span><span class="fu">join_type</span><span class="kw">:</span><span class="at"> MANY_TO_ONE</span><span class="kw">,</span><span class="at"> </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> order_items.product_id = products.product_id </span><span class="kw">}</span></span></code></pre></div>
+<blockquote>
+<p>⚠️ มี <code>relationships:</code> ซ้ำ 2 อัน → error "Map keys must be
+unique" (เอา item ทั้งหมดไว้ใต้ key เดียว)</p>
+</blockquote>
+<h3 id="ขั้น-4--เพิ่มกติกาใน-instructionsmd">ขั้น 4 — เพิ่มกติกาใน
+instructions.md</h3>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>category_code: 1=Electronics 2=Apparel 3=Food 4=Books 5=Home</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;revenue รายสินค้า&quot; = SUM(order_items.unit_price * quantity) + join orders กรอง status=2 — ห้ามใช้ products.price</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;สินค้า active&quot; = is_active = true</span></code></pre></div>
+<h3 id="ขั้น-5--เพิ่มคู่ใน-queriesyml">ขั้น 5 — เพิ่มคู่ใน queries.yml</h3>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">nl</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;สินค้าขายดี top 5 ตามจำนวน&quot;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">sql</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;SELECT p.name, SUM(oi.quantity) AS qty FROM order_items oi JOIN products p ON p.product_id = oi.product_id JOIN orders o ON o.order_id = oi.order_id WHERE o.status = 2 GROUP BY p.name ORDER BY qty DESC LIMIT 5&quot;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">nl</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;revenue รายสินค้า top 5&quot;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">sql</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;SELECT p.name, SUM(oi.quantity * oi.unit_price) AS revenue FROM order_items oi JOIN products p ON p.product_id = oi.product_id JOIN orders o ON o.order_id = oi.order_id WHERE o.status = 2 GROUP BY p.name ORDER BY revenue DESC LIMIT 5&quot;</span></span></code></pre></div>
+<h3 id="ขั้น-6--compile-ทั้งหมด-ตามลำดับ">ขั้น 6 — compile ทั้งหมด
+(ตามลำดับ!)</h3>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> context build                  <span class="co"># 1. แตะ model+relationship → rebuild mdl.json</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> context build <span class="kw">&amp;&amp;</span> <span class="ex">wren</span> memory index   <span class="co"># 2. แตะ instructions.md → re-index</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory load queries.yml        <span class="co"># 3. แตะ queries.yml → load เข้า store (ไม่ใช่ index!)</span></span></code></pre></div>
+<p>ผ่าน = <code>Built: 4 models, 0 views → target/mdl.json</code></p>
+<h3 id="ขั้น-7--verify">ขั้น 7 — verify</h3>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT COUNT(*) FROM products&quot;</span> <span class="at">-o</span> table        <span class="co"># → 40</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT COUNT(*) FROM order_items&quot;</span> <span class="at">-o</span> table     <span class="co"># → 3000</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-plan <span class="at">--sql</span> <span class="st">&quot;SELECT name, price FROM products LIMIT 3&quot;</span>   <span class="co"># ดู expand → public.products</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ex">wmr</span> <span class="st">&quot;สินค้าขายดี&quot;</span>                                          <span class="co"># recall เจอคู่เรา dist ต่ำ ✅</span></span></code></pre></div>
+<p>ครบ — ตอนนี้ถามเรื่อง products ได้แล้ว recall จับได้</p>
+<hr />
+<p><a id="8"></a></p>
+<h2 id="8-เพิ่มคำถามใหม่-recipe--ทางลัด">8. เพิ่มคำถามใหม่ (recipe +
+ทางลัด)</h2>
+<p>ไม่ต้องทำครบทุกขั้นเสมอ — เลือกตามความมั่นใจ:</p>
+<h3 id="ระดับ-1--แค่อยากได้คำตอบ-1-คำสั่ง">ระดับ 1 — แค่อยากได้คำตอบ (1
+คำสั่ง)</h3>
+<p>field มั่นใจครบ → ยิงเลย จบ</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT ...&quot;</span> <span class="at">-o</span> table</span></code></pre></div>
+<h3 id="ระดับ-2--อยากเก็บไว้ใช้ซ้ำ-1-คำสั่ง">ระดับ 2 — อยากเก็บไว้ใช้ซ้ำ (+1
+คำสั่ง)</h3>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT ...&quot;</span> <span class="at">-o</span> table</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory store <span class="at">--nl</span> <span class="st">&quot;คำถาม&quot;</span> <span class="at">--sql</span> <span class="st">&quot;...&quot;</span>   <span class="co"># จดเข้า memory ตรง (ไม่ git track)</span></span></code></pre></div>
+<h3 id="ระดับ-3--อยาก-git-track-ให้ทีมได้ด้วย-ครบ">ระดับ 3 — อยาก git track
+ให้ทีมได้ด้วย (ครบ)</h3>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;คำถาม&quot;</span>               <span class="co"># 1. เผื่อมีของเดิม (ข้ามได้)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-plan <span class="at">--sql</span> <span class="st">&quot;SELECT ...&quot;</span>            <span class="co"># 2. เช็ค field ถูก (ข้ามได้ถ้าชัวร์)</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT ...&quot;</span> <span class="at">-o</span> table            <span class="co"># 3. รันจริง</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. append คู่ใหม่ใน queries.yml (indent 2 space ใต้ pairs:)</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory load queries.yml                <span class="co"># 5. โหลดเข้า store</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;คำถาม&quot;</span>               <span class="co"># 6. ยืนยัน dist ต่ำ</span></span></code></pre></div>
+<h3 id="เมื่อไหร่ต้องแตะอะไร">เมื่อไหร่ต้องแตะอะไร</h3>
+<table>
+<thead>
+<tr>
+<th>คำถามต้องการ</th>
+<th>เพิ่มที่</th>
+<th>คำสั่งหลัง</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>field+join ครบแล้ว แค่อยากเก็บ</td>
+<td><code>queries.yml</code></td>
+<td><code>memory load queries.yml</code></td>
+</tr>
+<tr>
+<td>คอลัมน์ที่ DB มีแต่ model ไม่ประกาศ</td>
+<td><code>models/&lt;t&gt;/metadata.yml</code></td>
+<td><code>context build</code></td>
+</tr>
+<tr>
+<td>join ตารางใหม่ที่ยังไม่ผูก</td>
+<td><code>relationships.yml</code></td>
+<td><code>context build</code></td>
+</tr>
+<tr>
+<td>ศัพท์ธุรกิจใหม่ (VIP/churn)</td>
+<td><code>instructions.md</code></td>
+<td><code>context build &amp;&amp; memory index</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a id="9"></a></p>
+<h2 id="9-instructionsmd--กติกาธุรกิจ">9. instructions.md — กติกาธุรกิจ</h2>
+<p>ที่เก็บความหมายที่ SQL เขียนตรงๆ ไม่ได้. ทั้งคนและ LLM อ่าน.
+ตัวอย่างเพิ่มนิยามใหม่:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Definitions</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;VIP&quot; = ลูกค้าที่ซื้อรวม &gt; 10,000 (status 2)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&quot;churn&quot; = ไม่มี order paid ใน 180 วัน</span></code></pre></div>
+<p>หลังแก้:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> context build <span class="kw">&amp;&amp;</span> <span class="ex">wren</span> memory index</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory fetch <span class="at">-q</span> <span class="st">&quot;VIP customer&quot;</span>   <span class="co"># เช็คว่า context ดึงนิยามมาจริง</span></span></code></pre></div>
+<blockquote>
+<p><strong>เก็บให้ sync กับ SQL:</strong> ถ้า instructions บอก "revenue =
+status 2" แต่ queries.yml เขียน <code>status = 3</code> → ขัดกัน agent งง.
+แก้ที่เดียวให้ตรงกัน</p>
+</blockquote>
+<hr />
+<p><a id="10"></a></p>
+<h2 id="10-แก้ปัญหา-troubleshooting">10. แก้ปัญหา (Troubleshooting)</h2>
+<table>
+<thead>
+<tr>
+<th>อาการ</th>
+<th>สาเหตุ</th>
+<th>แก้</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>psql: connection ... No such file or directory</code></td>
+<td>ลืม <code>export $(... .env ...)</code> → <code>$PG_HOST</code>
+ว่าง</td>
+<td>โหลด env ก่อน (ข้อ 2.3)</td>
+</tr>
+<tr>
+<td><code>wren: command not found</code> / ไม่มี subcommand
+<code>memory</code></td>
+<td>ไม่ได้อยู่ใน venv</td>
+<td><code>source ~/.venvs/wren/bin/activate</code></td>
+</tr>
+<tr>
+<td><code>recall</code> ได้แต่ "List all products" ไม่เจอคู่ที่เขียน</td>
+<td>ลืม <code>memory load</code> (ใช้ <code>index</code> อย่างเดียว)</td>
+<td><code>wren memory load queries.yml</code></td>
+</tr>
+<tr>
+<td>queries.yml โดนเขียนทับด้วยคู่ auto</td>
+<td>เผลอรัน <code>wren memory dump</code></td>
+<td><code>git checkout queries.yml</code> กู้คืน</td>
+</tr>
+<tr>
+<td><code>memory dump/list</code> crash
+<code>No module named 'lance'</code></td>
+<td>ขาด pylance</td>
+<td><code>pip install pylance</code></td>
+</tr>
+<tr>
+<td>build error <code>Map keys must be unique</code></td>
+<td><code>relationships:</code> ซ้ำ 2 อันใน yaml</td>
+<td>รวมเป็น key เดียว</td>
+</tr>
+<tr>
+<td>build พัง เรื่อง primary_key</td>
+<td><code>primary_key</code> ชี้คอลัมน์ที่ไม่มีใน <code>columns:</code></td>
+<td>เพิ่มคอลัมน์นั้น หรือแก้ชื่อ</td>
+</tr>
+<tr>
+<td>query ได้เลขผิด/สูงเกิน</td>
+<td>context เก่า (ลืม build/index/load) หรือ SQL ตกหลุมกับดัก</td>
+<td>regenerate + เทียบกับ instructions.md</td>
+</tr>
+<tr>
+<td><code>-d postgres</code> แล้ว recall "No results"</td>
+<td>datasource filter ไม่ตรง — ปกติไม่ต้องใส่ <code>-d</code></td>
+<td>เอา <code>-d</code> ออก</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ทอง-หลังแก้-config-ทุกครั้ง-regenerate-ก่อนถาม">ทอง: หลังแก้ config
+"ทุกครั้ง" regenerate ก่อนถาม</h3>
+<p>ไม่งั้น query วิ่งบน context เก่า → ผลเพี้ยนแบบเงียบๆ</p>
+<hr />
+<p><a id="11"></a></p>
+<h2 id="11-cheat-sheet--คำสั่งทั้งหมด">11. Cheat sheet — คำสั่งทั้งหมด</h2>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># เตรียม (ทุก terminal ใหม่)</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Desktop/work/my-wren-project <span class="kw">&amp;&amp;</span> <span class="bu">source</span> ~/.venvs/wren/bin/activate <span class="kw">&amp;&amp;</span> <span class="bu">export</span> <span class="va">$(</span><span class="fu">grep</span> <span class="at">-v</span> <span class="st">&#39;^#&#39;</span> .env <span class="kw">|</span> <span class="fu">xargs</span><span class="va">)</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># seed DB (ครั้งแรก)</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="ex">psql</span> <span class="at">-h</span> <span class="st">&quot;</span><span class="va">$PG_HOST</span><span class="st">&quot;</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$PG_PORT</span><span class="st">&quot;</span> <span class="at">-U</span> <span class="st">&quot;</span><span class="va">$PG_USER</span><span class="st">&quot;</span> <span class="at">-d</span> <span class="st">&quot;</span><span class="va">$PG_DATABASE</span><span class="st">&quot;</span> <span class="at">-f</span> demo_db/seed_wren_demo.sql</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compile (เลือกตามที่แก้)</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> context build                         <span class="co"># แก้ model/relationship</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> context build <span class="kw">&amp;&amp;</span> <span class="ex">wren</span> memory index    <span class="co"># แก้ instructions.md / เพิ่ม model</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory load queries.yml               <span class="co"># แก้ queries.yml  ← load ไม่ใช่ index!</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ถาม</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> <span class="at">--sql</span> <span class="st">&quot;SELECT ...&quot;</span> <span class="at">-o</span> table<span class="kw">|</span><span class="ex">json</span><span class="kw">|</span><span class="ex">csv</span>  <span class="co"># รันจริง (ชื่อ model)</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-plan <span class="at">--sql</span> <span class="st">&quot;...&quot;</span>                  <span class="co"># ดู SQL ที่ expand (ไม่แตะ DB)</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> dry-run  <span class="at">--sql</span> <span class="st">&quot;...&quot;</span>                  <span class="co"># validate กับ DB (ไม่คืน row)</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="co"># memory</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory recall <span class="at">-q</span> <span class="st">&quot;...&quot;</span> <span class="at">-l</span> 3           <span class="co"># หาคู่ใกล้สุด</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory fetch  <span class="at">-q</span> <span class="st">&quot;...&quot;</span>                <span class="co"># ดู context ที่ agent ดึง</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory store  <span class="at">--nl</span> <span class="st">&quot;...&quot;</span> <span class="at">--sql</span> <span class="st">&quot;...&quot;</span>  <span class="co"># เก็บ 1 คู่ (ไม่ git track)</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory load queries.yml <span class="pp">[--</span><span class="ss">upsert</span><span class="pp">]</span>    <span class="co"># import queries.yml (--upsert ทับ SQL เดิม)</span></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory reset                          <span class="co"># ล้างเริ่มใหม่</span></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> memory index <span class="at">--no-seed</span>                <span class="co"># index schema ไม่สร้าง auto browse</span></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="co"># profile (DB connection)</span></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a><span class="ex">wren</span> profile list / debug / switch <span class="op">&lt;</span>name<span class="op">&gt;</span></span></code></pre></div>
+<hr />
+<p><em>คู่มือนี้อ้างอิงสถานะจริงของ repo · ตัวเลขจาก seed (deterministic) ·
+คำสั่งทดสอบกับ wren CLI ในโปรเจกต์นี้</em></p>
+
+</main>
+<footer>
+  <span>WrenAI semantic layer · คู่มือฉบับสมบูรณ์</span>
+  <a href="index.html">เวอร์ชัน interactive →</a>
+</footer>
+</div>
+<script>
+// label code fences with language (from pandoc class) + build TOC from h2
+(function(){
+  const main=document.getElementById('content');
+  // language label on <pre>
+  main.querySelectorAll('pre code').forEach(c=>{
+    const m=[...c.classList].find(x=>x!=='sourceCode');
+    const lang=(m||'').replace('language-','');
+    if(lang) c.closest('pre').setAttribute('data-lang',lang);
+  });
+  // build sidebar from h2
+  const toc=document.getElementById('toc');
+  const secs=[...main.querySelectorAll('h2')];
+  secs.forEach((h,i)=>{
+    if(!h.id) h.id='sec-'+i;
+    const txt=h.textContent.trim().replace(/^\d+\.\s*/,'');
+    const a=document.createElement('a');
+    a.href='#'+h.id;
+    a.innerHTML='<span class="nn">'+String(i).padStart(2,'0')+'</span><span>'+txt+'</span>';
+    toc.appendChild(a);
+  });
+  const links=[...toc.querySelectorAll('a')];
+
+  // progress bar
+  const prog=document.getElementById('prog');
+  function onScroll(){
+    const sc=window.scrollY, mx=document.body.scrollHeight-window.innerHeight;
+    prog.style.width=(mx>0?sc/mx*100:0)+'%';
+    spy();
+  }
+  // scroll-spy with bottom clamp + nav lock
+  let navLock=false,navTimer;
+  function setActive(id){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));}
+  function spy(){
+    if(navLock) return;
+    const sc=window.scrollY, mx=document.body.scrollHeight-window.innerHeight;
+    let cur=secs[0].id;
+    for(const s of secs){ if(s.getBoundingClientRect().top<=120) cur=s.id; }
+    if(sc>=mx-2) cur=secs[secs.length-1].id;
+    setActive(cur);
+  }
+  // nav clicks: explicit smooth scroll + lock
+  const navEl=document.querySelector('nav'), toggle=document.getElementById('navtoggle');
+  function closeNav(){navEl.classList.remove('open');toggle.textContent='☰';}
+  links.forEach(a=>a.addEventListener('click',e=>{
+    const id=a.getAttribute('href').slice(1), el=document.getElementById(id);
+    if(!el) return;
+    e.preventDefault(); closeNav();
+    navLock=true; setActive(id); clearTimeout(navTimer);
+    navTimer=setTimeout(()=>{navLock=false; spy();}, 760);
+    const y=el.getBoundingClientRect().top+window.scrollY-14;
+    window.scrollTo({top:y,behavior:'smooth'});
+    history.replaceState(null,'','#'+id);
+  }));
+  toggle.addEventListener('click',()=>{
+    const open=navEl.classList.toggle('open');
+    toggle.textContent=open?'✕':'☰';
+  });
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
