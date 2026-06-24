@@ -21,8 +21,11 @@ Config files are **source**; `target/mdl.json` and `.wren/memory/` are **generat
 
 ```bash
 wren context build                          # after editing models/*.yml or relationships.yml → recompiles target/mdl.json
-wren context build && wren memory index     # after editing instructions.md or queries.yml → also re-indexes memory
+wren context build && wren memory index     # after editing instructions.md → re-index schema + instructions
+wren memory load queries.yml                # after editing queries.yml → import curated pairs into store
 ```
+
+⚠️ **`queries.yml` is loaded by `wren memory load`, NOT `wren memory index`.** In this CLI version `memory index` only generates auto browse queries (e.g. "List all products") and does NOT reliably ingest `queries.yml` into the recall store — `recall` will return the auto pairs instead of your curated ones. Use `wren memory load queries.yml` (add `--upsert` to overwrite SQL for an existing `nl`). Never run `wren memory dump` casually — it exports the store and **overwrites `queries.yml`** (reverse direction).
 
 ## Common commands
 
@@ -32,7 +35,9 @@ wren dry-plan --sql "SELECT first_name FROM customers"     # show expanded SQL (
 wren dry-run  --sql "..."                                  # validate against DB, no rows returned
 wren memory recall --query "ลูกค้ามีกี่คน"                  # find nearest stored NL↔SQL pair (lower distance = closer)
 wren memory fetch  --query "..."                           # show context the agent would pull
-wren memory store --nl "..." --sql "..."                   # save a new NL↔SQL pair
+wren memory store --nl "..." --sql "..."                   # save a single NL↔SQL pair directly into the store
+wren memory load queries.yml [--upsert|--dry-run]          # import curated pairs from queries.yml into the store
+wren memory dump                                           # ⚠️ EXPORT store → OVERWRITES queries.yml (reverse of load)
 wren profile list / debug / switch <name>                  # manage DB profiles (stored globally in ~/.wren/profiles.yml)
 ```
 
@@ -45,7 +50,7 @@ Query against **model names**, never raw tables. The semantic layer is four coop
 - **`models/<name>/metadata.yml`** — each defines one model. The `name:` is the queryable alias; `table_reference.table` is the real table. Key indirection: model `customers` maps to real table `customers_v2` (so the dead `customers_v1` is unreachable). Only listed `columns:` are visible to the agent — omitting a column is the masking mechanism (e.g. `national_id` is intentionally absent).
 - **`relationships.yml`** — declares joins (`order_customers`: orders→customers MANY_TO_ONE). Lets cross-table questions resolve without hand-written JOINs.
 - **`instructions.md`** — business semantics SQL can't express: what "active customer"/"revenue"/"สมัครสมาชิก" mean, and the `status` integer codes (1=pending, 2=paid, 3=shipped, 4=refunded, 5=cancelled). Both humans and the LLM read this. **When a definition here changes, the meaning of generated SQL changes** — treat it as load-bearing.
-- **`queries.yml`** — curated NL↔SQL pairs that seed `memory recall`. Add a pair here (then re-index) to make a recurring question resolve accurately. This is the git-tracked source of truth for memory, since `.wren/memory/` itself is gitignored.
+- **`queries.yml`** — curated NL↔SQL pairs that seed `memory recall`. Add a pair here then run `wren memory load queries.yml` (NOT `memory index`) to make a recurring question resolve accurately. This is the git-tracked source of truth for memory, since `.wren/memory/` itself is gitignored.
 
 `wren_project.yml` ties it together (`catalog: wren`, `schema: public`, `data_source: postgres`, bound `profile`). `connection.yml` defines the datasource with `${PG_*}` placeholders.
 

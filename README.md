@@ -107,9 +107,14 @@ wmr() {
 ## หลังแก้ config ทุกครั้ง
 
 ```bash
-wren context build                       # แก้ models/*.yml, relationships.yml
-wren context build && wren memory index  # ถ้าแตะ instructions.md / queries.yml
+wren context build                       # แก้ models/*.yml, relationships.yml → rebuild mdl.json
+wren context build && wren memory index  # ถ้าแตะ instructions.md (re-index schema + instructions)
+wren memory load queries.yml             # ถ้าแตะ queries.yml ← ใช้ load ไม่ใช่ index! (ดู note)
 ```
+
+> ⚠️ **queries.yml เข้า store ด้วย `memory load` ไม่ใช่ `memory index`.**
+> `index` สร้างแค่ auto browse queries — ไม่ดึงคู่ curate เข้า recall. `load` ต่างหากที่ import queries.yml → store.
+> (`dump` = ทิศกลับ: export store → เขียนทับ queries.yml — อย่ารันมั่ว). รายละเอียด: [recipe › Gotcha](docs/wren_new_question_recipe.md)
 
 ---
 

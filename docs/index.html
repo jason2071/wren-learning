@@ -435,10 +435,11 @@ footer a:hover{text-decoration:underline}
     <div class="loop" style="margin-bottom:18px">
       <div class="lstep"><div class="ls-n">ระดับ 1 · เร็วสุด</div><div class="ls-c" style="color:var(--green)">1 คำสั่ง</div><p>แค่อยากได้คำตอบ · field มั่นใจครบ<br><code>wren --sql "..."</code></p></div>
       <div class="lstep"><div class="ls-n">ระดับ 2 · เก็บไว้</div><div class="ls-c" style="color:var(--amber)">+ store</div><p>อยากใช้ซ้ำ<br><code>wren memory store --nl --sql</code></p></div>
-      <div class="lstep"><div class="ls-n">ระดับ 3 · ครบ</div><div class="ls-c" style="color:var(--cyan)">git track</div><p>append <code>queries.yml</code><br>→ <code>build &amp;&amp; index</code></p></div>
+      <div class="lstep"><div class="ls-n">ระดับ 3 · ครบ</div><div class="ls-c" style="color:var(--cyan)">git track</div><p>append <code>queries.yml</code><br>→ <code>memory load queries.yml</code></p></div>
     </div>
     <div class="note warn"><b>ลำดับบังคับ:</b> <code>context build</code> ต้องก่อน <code>memory index</code> เสมอ (index อ่าน mdl.json) · เพิ่ม column/relationship → build ก่อนรัน SQL ที่ใช้ field ใหม่ · <code>store</code> เข้า memory ตรง ไม่ต้อง build</div>
-    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml/build/index</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_new_question_recipe.md</code></div>
+    <div class="note warn"><b>queries.yml → store ใช้ <code>memory load</code> ไม่ใช่ <code>memory index</code>:</b> <code>index</code> สร้างแค่ auto browse queries (List all X) — ไม่ดึงคู่ curate เข้า recall · <code>wren memory load queries.yml</code> (<code>--upsert</code> ถ้าแก้ SQL เดิม) · <code>memory dump</code> = ทิศกลับ เขียนทับ queries.yml อย่ารันมั่ว</div>
+    <div class="note">rule of thumb: <b>ตอบเฉยๆ = 1 คำสั่ง</b> · <b>เก็บถาวร = +store หรือ +queries.yml → memory load</b>. รายละเอียดเต็ม + worked example → <code>docs/wren_new_question_recipe.md</code></div>
   </section>
 
   <!-- CLI -->
@@ -459,7 +460,7 @@ footer a:hover{text-decoration:underline}
         <tr><td>ดู/สลับ profile</td><td><code>wren profile list · switch &lt;name&gt;</code></td></tr>
       </tbody>
     </table>
-    <div class="note warn">แก้ config ทุกครั้ง → <code>wren context build</code> (+ <code>wren memory index</code> ถ้าแตะ <code>instructions.md</code> / <code>queries.yml</code>)</div>
+    <div class="note warn">แก้ config ทุกครั้ง → <code>wren context build</code> · แตะ <code>instructions.md</code> → <code>+ wren memory index</code> · แตะ <code>queries.yml</code> → <code>wren memory load queries.yml</code> (ไม่ใช่ index!)</div>
   </section>
 
   <footer>

@@ -215,7 +215,8 @@ wren memory store \
 ```
 
 สรุปสิ่งที่ "เพิ่ม": **ไม่แตะ code / model เลย** — แค่ (option) เพิ่มคู่ NL↔SQL ลง memory ผ่าน `store`
-หรือใส่ลง `queries.yml` แล้ว `wren memory index` ก็ได้ (config ไม่ใช่ code)
+หรือใส่ลง `queries.yml` แล้ว `wren memory load queries.yml` ก็ได้ (config ไม่ใช่ code)
+> หมายเหตุ: ใช้ `memory load` ไม่ใช่ `memory index` — `index` สร้างแค่ auto browse queries ไม่ดึงคู่ curate เข้า recall
 
 ---
 

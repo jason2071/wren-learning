@@ -169,11 +169,12 @@ cat >> queries.yml <<'EOF'
 EOF
 ```
 
-**3. build + index** (instructions.md + queries.yml เข้า memory)
+**3. เข้า memory**
 ```bash
-wren context build
-wren memory index
+wren context build && wren memory index   # ถ้าแตะ instructions.md (re-index schema + instructions)
+wren memory load queries.yml              # คู่ใน queries.yml เข้า store ← load ไม่ใช่ index!
 ```
+> ⚠️ `queries.yml` เข้า store ด้วย `memory load` — `memory index` สร้างแค่ auto browse queries ไม่ดึงคู่ curate. ดู [recipe › Gotcha](wren_new_question_recipe.md)
 
 **4. verify ว่า agent ดึง context ถูก**
 ```bash
@@ -266,7 +267,7 @@ wmr() {
 ## เกร็ด
 
 - `wren_project.yml` ชี้ `profile: example`, active = `my-wren-project` — ทั้งคู่ postgres 5433/example เหมือนกัน ใช้ได้ อยากตรงก็ `wren context set-profile my-wren-project`
-- แก้ yml/md ทุกครั้ง → `wren context build` (+ `wren memory index` ถ้าแตะ `instructions.md` / `queries.yml`)
+- แก้ yml/md ทุกครั้ง → `wren context build` · แตะ `instructions.md` → `+ wren memory index` · แตะ `queries.yml` → `wren memory load queries.yml` (ไม่ใช่ index!)
 - เทียบ before/after ใช้ `wren dry-plan` (ดู SQL expand) ดีสุด — ไม่แตะ DB
 - รัน SQL จริง: `wren --sql "..." -o table` · validate ไม่คืน row: `wren dry-run --sql "..."`
 - `memory` subcommands จริง: `index · fetch · store · recall · list · forget · load · reset · status` (`dump` พังเพราะขาด `lance`)

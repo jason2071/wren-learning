@@ -223,7 +223,9 @@ wren profile switch other-db
 | fetch context | `wren memory fetch --query "..."` |
 | recall query เก่า | `wren memory recall --query "..."` |
 | store NL-SQL | `wren memory store --nl "..." --sql "..."` |
-| re-index memory | `wren memory index` |
+| load queries.yml → store | `wren memory load queries.yml` (`--upsert` ทับ SQL เดิม) |
+| re-index schema/instructions | `wren memory index` |
+| ⚠️ dump store → queries.yml | `wren memory dump` (เขียนทับ — ทิศกลับของ load) |
 
 ---
 
